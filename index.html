@@ -46,11 +46,20 @@
 @media(max-width:760px){#theme8 .m8-settings .example{grid-column:1/-1}#theme8 .m8-settings{grid-template-columns:repeat(2,minmax(0,1fr))}#theme8 .m8-anatomy code{font-size:13px}#theme8 .m8-anatomy div{padding:6px 4px}#theme8 .m8-anatomy div.active{padding:5px 3px}#theme8 .m8-items{gap:6px}#theme8 .m8-parcel{width:48px;height:46px}#theme8 .m8-item small{font-size:10px}#theme8 .m8-item{padding:5px 3px}#theme8 .m8-money strong{font-size:16px}#theme8 .m8-fold-scene{gap:10px}#theme8 .m8-fold-label{font-size:13px}#theme8 .m8-sheet-stack{flex-basis:120px}#theme8 .m8-fold-label strong{font-size:22px}#theme8 th,#theme8 td{padding:5px 4px}#theme8 .m8-anatomy small{font-size:10px}}
 @media(prefers-reduced-motion:reduce){#theme8 .m8-label-arrive .m8-sticker,#theme8 .m8-total.pulse,#theme8 .m8-fold-flap{animation:none}#theme8 .m8-fold-flap{display:none}}
 
+
+.startup-notice{margin-top:24px;padding:20px;background:var(--paper);border:1px solid var(--line);border-radius:10px;max-width:850px}.startup-notice h2{font-size:21px}.startup-notice p{margin:10px 0}.startup-notice .startup-link{display:inline-block;padding:10px 14px;color:white;background:var(--navy);border-radius:6px;text-decoration:none}.startup-notice .startup-address{overflow-wrap:anywhere;font:14px/1.5 Consolas,monospace;color:var(--navy)}body:not(.app-ready) .app-grid,body:not(.app-ready) header .lang{display:none}.app-ready .startup-notice{display:none}
 </style></head>
 
 <body><main>
 
-<header><div><h1 id="appTitle"></h1><p id="appIntro"></p></div><div class="lang"><label for="language" id="langLabel"></label><select id="language"><option value="ro">Română</option><option value="ru">Русский</option></select></div></header>
+<header><div><h1 id="appTitle">Programare structurată</h1><p id="appIntro">Simulări interactive · Интерактивные симуляции</p></div><div class="lang"><label for="language" id="langLabel">Limba / Язык</label><select id="language"><option value="ro">Română</option><option value="ru">Русский</option></select></div></header>
+<section id="startupNotice" class="startup-notice" aria-labelledby="startupTitle">
+<h2 id="startupTitle">Simulări interactive / Интерактивные симуляции</h2>
+<p lang="ro">Simulările nu au pornit în această aplicație. Pentru acces de pe telefon, se deschide versiunea online în Safari sau Chrome.</p>
+<p lang="ru">Симуляции не запустились в этом приложении. Для работы на телефоне онлайн-версия открывается в Safari или Chrome.</p>
+<p><a class="startup-link" href="https://vladika-sys.github.io/simulator-programare/" target="_blank" rel="noopener">Deschide simulatorul online / Открыть онлайн</a></p>
+<p class="startup-address">https://vladika-sys.github.io/simulator-programare/</p>
+</section>
 
 <div class="app-grid"><nav id="topicNavigation" class="topic-menu"><h2 id="topicsTitle"></h2><div id="topicButtons" class="topic-buttons"></div></nav><div class="app-content">
 
@@ -787,13 +796,13 @@ function trace(cfg){
  while(true){
   const ok=s.i<=cfg.n;emit('test','header',ok?(cfg.mode==='savings'?'term':'body'):'finish',{phase:'test',condition:ok,expr:`${s.i} <= ${cfg.n}`});if(!ok)break;
   s.rows.push({i:s.i,term:null,before:cfg.mode==='labels'?null:cfg.mode==='savings'?s.sum:s.layers,after:null,next:null,output:null});
-  if(cfg.mode==='savings'){s.term=cfg.first+(s.i-1)*cfg.delta;s.rows.at(-1).term=s.term;emit('term','term','body');}
+  if(cfg.mode==='savings'){s.term=cfg.first+(s.i-1)*cfg.delta;s.rows[s.rows.length - 1].term=s.term;emit('term','term','body');}
   const before=cfg.mode==='savings'?s.sum:s.layers;
-  if(cfg.mode==='labels'){s.output+=s.i+' ';s.rows.at(-1).output=String(s.i);}
-  if(cfg.mode==='savings'){s.sum+=s.term;s.rows.at(-1).after=s.sum;}
-  if(cfg.mode==='fold'){s.layers*=2;s.rows.at(-1).after=s.layers;}
+  if(cfg.mode==='labels'){s.output+=s.i+' ';s.rows[s.rows.length - 1].output=String(s.i);}
+  if(cfg.mode==='savings'){s.sum+=s.term;s.rows[s.rows.length - 1].after=s.sum;}
+  if(cfg.mode==='fold'){s.layers*=2;s.rows[s.rows.length - 1].after=s.layers;}
   s.done++;emit('body','body','advance',{before});
-  s.i++;s.rows.at(-1).next=s.i;emit('advance','header','test',{phase:'advance'});
+  s.i++;s.rows[s.rows.length - 1].next=s.i;emit('advance','header','test',{phase:'advance'});
  }
  s.output+=cfg.mode==='labels'?'Gata':cfg.mode==='savings'?String(s.sum):String(s.layers);emit('finish','finish',null);
  return {lines,map,events};
@@ -955,7 +964,7 @@ registerTheme('11',{elementId:'theme11',title:['Cicluri imbricate și algoritmi 
 
 registerTheme('12',{elementId:'theme12',title:['Tablouri unidimensionale','Одномерные массивы'],onLanguage:lang=>window.theme12.setLanguage(lang)});
 
-language.addEventListener('change',translate);translate();
+language.addEventListener('change',translate);translate();document.body.classList.add('app-ready');
 
 })();
 
