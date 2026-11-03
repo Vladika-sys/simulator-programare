@@ -1,0 +1,965 @@
+<!doctype html>
+
+<html lang="ro">
+
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Programare structurată</title>
+
+<style>
+
+:root{color-scheme:light;--bg:#f6f1e8;--paper:#fffcf6;--ink:#1c2933;--navy:#153a52;--teal:#2f6f73;--line:#c9bdae;--soft:#d8e8e5;--amber:#f2d4af;--red:#9a3831}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Segoe UI",sans-serif}main{max-width:1180px;margin:auto;padding:34px 28px 52px}header{display:flex;gap:24px;justify-content:space-between;align-items:flex-start}h1{font-size:clamp(26px,4vw,38px);line-height:1.2;color:var(--navy);margin:0 0 12px}h2{font-size:22px;margin:0 0 12px;color:var(--navy)}p{margin:0 0 16px}label{display:block;font-size:15px;font-weight:600;margin-bottom:7px}button,input,select{font:inherit;border:1px solid var(--line);border-radius:6px;padding:10px 14px;min-height:44px;color:var(--ink);background:var(--paper)}button{cursor:pointer}button:hover{background:var(--soft)}button:disabled{cursor:default;opacity:.45}button.primary{color:#fff;background:var(--navy);border-color:var(--navy)}button.primary:hover{background:var(--teal)}input,select{width:100%}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a66727;outline-offset:3px}.setup{margin:24px 0;display:grid;grid-template-columns:1fr 2fr auto;gap:16px;align-items:end}.operations{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:18px;align-items:end;margin:22px 0}.surface{background:var(--paper);padding:24px;border-radius:10px;margin-top:22px}.meta{display:flex;flex-wrap:wrap;gap:14px 28px;margin-bottom:22px}.meta strong{color:var(--navy)}.cells{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:9px}.cell{text-align:center;min-width:0}.index{font:15px Consolas,monospace;padding-bottom:7px;color:var(--navy)}.value{display:flex;align-items:center;justify-content:center;min-height:75px;background:var(--soft);border-radius:5px;font:600 clamp(16px,2.3vw,26px) Consolas,monospace;overflow-wrap:anywhere;padding:5px;position:relative}.inactive .value{background:#e7e3dc;color:#69665f}.inactive .index{color:#69665f}.active .value{outline:3px solid var(--teal);outline-offset:1px}.dest .value{background:var(--amber);outline:3px solid #a56224;outline-offset:1px}.source .value{outline:3px solid var(--teal);outline-offset:1px}.cell-tag{font-size:12px;min-height:38px;padding-top:8px}.legend{font-size:14px;color:#525b60;margin-top:8px}.controls{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0 14px}.status{min-height:60px;color:var(--navy);font-weight:600}.results{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;padding-top:18px;border-top:1px solid var(--line)}.result span{display:block;font-size:14px}.result output{font:600 25px Consolas,monospace;color:var(--navy)}.columns{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;margin-top:28px}.code{margin:0;background:#0e2838;color:#fff;padding:18px;border-radius:8px;font:16px/1.6 Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.code-line{display:block;border-radius:3px;padding:0 6px}.code-line.current{background:#315e67}.help{font-size:16px}#error{color:var(--red);font-weight:600;margin:12px 0}.foot{font-size:14px;color:#525b60;margin-top:24px}.lang{min-width:140px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+
+@media(max-width:760px){main{padding:24px 16px}header{display:block}.lang{max-width:190px;margin-top:18px}.setup,.operations{grid-template-columns:1fr}.columns{grid-template-columns:1fr}.surface{padding:18px 13px}.cells{gap:5px}.value{min-height:60px}.cell-tag{display:none}.cells{margin-bottom:14px}.results{grid-template-columns:repeat(2,1fr)}.meta{gap:8px 20px}.index{font-size:12px}.code{font-size:14px}}@media(prefers-reduced-motion:no-preference){.value{transition:background .18s,outline .18s}}
+
+
+
+[hidden]{display:none!important}.app-grid{display:grid;grid-template-columns:250px minmax(0,1fr);gap:32px;margin-top:26px}.topic-menu{align-self:start;position:sticky;top:20px}.topic-menu h2{font-size:18px}.topic-buttons{display:grid;gap:10px}.topic-buttons button{text-align:left;width:100%;line-height:1.45;white-space:normal}.topic-buttons button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}.app-content{min-width:0}.lesson-title{font-size:28px;line-height:1.25;margin:0 0 12px}main{max-width:1480px}.t11-settings{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px;align-items:end;margin:24px 0 18px}#t11RuleGroup{grid-column:1/-1}.t11-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:18px}#t11InputHelp{grid-column:1/-1}.error{color:var(--red);font-weight:600;margin:12px 0}.t11-grid-row,.t11-workshop{display:grid;grid-template-columns:85px minmax(0,1fr);gap:12px;align-items:center;margin-bottom:12px}.t11-row-label{font-size:14px;font-weight:600;color:var(--navy)}.t11-grid-cells{display:grid;grid-template-columns:repeat(var(--count),minmax(0,1fr));gap:8px}.t11-grid-cell{background:#e7e3dc;border-radius:5px;padding:10px 5px;text-align:center;min-height:74px;display:flex;flex-direction:column;justify-content:center;font:20px Consolas,monospace}.t11-grid-cell.visited{background:var(--soft)}.t11-grid-cell.current,.t11-token.current{outline:3px solid var(--teal);outline-offset:1px}.t11-grid-cell.stopped{background:var(--amber)}.t11-grid-cell.outside{opacity:.45;background:transparent}.t11-cell-note{font:12px/1.3 "Segoe UI",sans-serif;min-height:30px;display:block;padding-top:6px;overflow-wrap:anywhere}.t11-summary{display:flex;flex-wrap:wrap;gap:10px 26px;border-top:1px solid var(--line);padding-top:15px;margin-bottom:20px}.t11-summary span{font-size:15px}.output-text{font:17px/1.6 Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0 0;color:var(--navy)}h3{font-size:17px;margin:0 0 8px;color:var(--navy)}.t11-tokens{display:flex;gap:8px;flex-wrap:wrap}.t11-token{min-width:54px;text-align:center;padding:12px 8px;background:#e7e3dc;border-radius:5px;font:20px Consolas,monospace}.t11-token.visited{background:var(--soft)}.t11-token.sentinel{border:1px dashed var(--teal)}.t11-token.unused{opacity:.45}.app-grid .columns{grid-template-columns:1fr}.app-grid .code{font-size:16px}
+
+.t11-scroll-note{display:none}
+
+@media(max-width:1000px){.app-grid{grid-template-columns:1fr}.topic-menu{position:static}.topic-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}.app-grid .columns{grid-template-columns:1.3fr 1fr}.t11-settings{grid-template-columns:2fr 1fr 1fr}}@media(max-width:760px){.app-grid{gap:24px}.topic-buttons{grid-template-columns:1fr}.lesson-title{font-size:25px}.t11-settings,.t11-inputs{grid-template-columns:1fr}.app-grid .columns{grid-template-columns:1fr}.t11-grid-row,.t11-workshop{grid-template-columns:1fr;gap:7px}.t11-grid-cells{gap:6px;grid-template-columns:repeat(var(--count),minmax(86px,1fr));overflow-x:auto;padding:4px;scrollbar-width:thin}.t11-grid-cell{font-size:16px;min-height:68px}.t11-cell-note{font-size:12px;overflow-wrap:normal}.t11-summary{display:grid}.t11-tokens{gap:7px}.t11-token{min-width:46px;font-size:17px}.t11-scroll-note{display:block;font-size:13px;color:#525b60;margin-top:6px}}
+
+
+
+
+#theme10{--c-next:#147872;--c-skip:#aa650b;--c-stop:#bc3e39;--c-code:#102b3b}#theme10 .lesson-title{font-size:26px;margin-bottom:18px}.cycle-settings{display:grid;grid-template-columns:minmax(220px,2fr) 1fr 90px 120px;gap:12px;align-items:end}.cycle-settings label{font-size:14px}.cycle-settings input,.cycle-settings select{padding:8px 10px;min-height:42px}.cycle-settings #t10ValuesGroup{grid-column:2/-1}.cycle-goal{margin:12px 0;font-size:16px}.cycle-bug{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:400;margin:10px 0}.cycle-bug input{width:19px;min-height:19px}.cycle-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0}.cycle-controls button{padding:8px 13px;font-size:15px;min-height:40px}.cycle-progress{font:14px Consolas,monospace;color:var(--navy);margin-left:5px}.cycle-speed{display:flex;gap:8px;align-items:center;margin:0 0 0 auto;font-size:13px;font-weight:400}.cycle-speed select{width:auto;min-height:36px;font-size:13px;padding:5px}.cycle-workspace{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}.cycle-visual,.cycle-program{background:var(--paper);border:1px solid #ded4c6;border-radius:10px;padding:16px;min-width:0}.cycle-workspace h3{font-size:17px;margin-bottom:10px}.cycle-flow svg{display:block;width:100%;height:auto;max-height:420px;overflow:visible}.cycle-node rect,.cycle-node polygon{fill:#f4efe6;stroke:#a9aaa6;stroke-width:1.7}.cycle-node text{font:17px Consolas,monospace;fill:var(--ink);pointer-events:none}.cycle-node .cycle-node-note{font:13px "Segoe UI",sans-serif}.cycle-node.active rect,.cycle-node.active polygon{fill:#d8eeea;stroke:var(--c-next);stroke-width:3.4}.cycle-node.jump-stop.active rect{fill:#f9deda;stroke:var(--c-stop)}.cycle-node.jump-continue.active rect{fill:#ffebca;stroke:var(--c-skip)}.cycle-node.dim{opacity:.28}.cycle-edge{fill:none;stroke:#c9c9c2;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}.cycle-edge.active{stroke:var(--c-next);stroke-width:3.8}.cycle-edge.active.stop{stroke:var(--c-stop)}.cycle-edge.active.skip{stroke:var(--c-skip)}.cycle-edge-label{font:14px "Segoe UI",sans-serif;fill:#52606a}.cycle-dot{fill:var(--c-next);stroke:white;stroke-width:2}.cycle-dot.stop{fill:var(--c-stop)}.cycle-dot.skip{fill:var(--c-skip)}.cycle-status{min-height:58px;font-size:16px;line-height:1.45;margin:8px 0;color:var(--navy);font-weight:600}.cycle-route{padding:9px 0 0;border-top:1px solid var(--line);font-size:14px;min-height:33px}.cycle-route.stop{color:var(--c-stop)}.cycle-route.skip{color:#885300}#theme10 .code{font-size:15px;line-height:1.6;padding:12px 8px;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:6px;margin-bottom:12px}#theme10 .code-line{display:flex;gap:10px;padding:0 5px;min-height:24px}#theme10 .code-line .line-no{width:18px;flex:0 0 18px;text-align:right;opacity:.42;font-size:12px;user-select:none}#theme10 .code-line .line-text{white-space:pre-wrap}#theme10 .code-line.current{background:#2e666c;box-shadow:inset 3px 0 #73d9c6}#theme10 .code-line.skipped{color:#a8a9ab;opacity:.65;text-decoration:line-through}#theme10 .code-line.jump-stop.current{background:#7b393b;box-shadow:inset 3px 0 #ff958a}#theme10 .code-line.jump-continue.current{background:#765315;box-shadow:inset 3px 0 #ffd180}.cycle-vars{display:flex;gap:8px 18px;flex-wrap:wrap;margin:8px 0 16px;font:17px Consolas,monospace}.cycle-vars span{padding:5px 0}.cycle-output{background:#f2eee6;border:1px solid #d6ccbb;border-radius:5px;min-height:48px;padding:10px;font:19px Consolas,monospace;display:flex;gap:8px;flex-wrap:wrap}.cycle-output .empty{font:14px "Segoe UI",sans-serif;color:#607079}.cycle-output .new{color:var(--c-next);font-weight:700}.cycle-trail{margin-top:18px}.cycle-trail h3{font-size:16px}.cycle-trail>div{display:flex;flex-wrap:wrap;gap:9px}.cycle-ticket{padding:7px 10px;border:1px solid #d5cdbf;border-radius:5px;min-width:72px;text-align:center;display:grid;gap:1px;background:#ede9e2}.cycle-ticket strong{font:22px Consolas,monospace}.cycle-ticket span{font-size:12px}.cycle-ticket.printed,.cycle-ticket.added,.cycle-ticket.valid{background:#d8eeea}.cycle-ticket.continue,.cycle-ticket.invalid{background:#ffebca}.cycle-ticket.break{background:#f9deda}.cycle-ticket.focus{outline:2px solid var(--navy);outline-offset:1px}.cycle-ticket.waiting{opacity:.55}.cycle-input-caption{font-size:13px;color:#566476;flex-basis:100%}.cycle-details{margin-top:16px;font-size:15px}.cycle-details summary{cursor:pointer;font-weight:600;color:var(--navy)}.cycle-details p{margin-top:9px;max-width:900px}.cycle-status.warning{color:var(--c-stop)}
+@media(min-width:1500px){.cycle-workspace{grid-template-columns:1.15fr 1fr}.cycle-flow svg{max-height:460px}}
+@media(max-width:1150px){.cycle-settings{grid-template-columns:minmax(210px,2fr) 1fr 80px 100px}.cycle-workspace{grid-template-columns:1fr}.cycle-visual{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}.cycle-visual h3{grid-column:1/-1}.cycle-flow{grid-row:2/4}.cycle-status{align-self:center}.cycle-route{align-self:start}.cycle-flow svg{max-height:340px}#theme10 .code{font-size:16px}}
+@media(max-width:760px){.cycle-settings{grid-template-columns:1fr 1fr}.cycle-example{grid-column:1/-1}.cycle-settings #t10ValuesGroup{grid-column:1/-1}.cycle-workspace{gap:12px}.cycle-visual{display:block}.cycle-visual,.cycle-program{padding:12px}.cycle-speed{margin-left:0}.cycle-controls{gap:7px}.cycle-controls button{font-size:14px;padding:7px 10px}.cycle-status{min-height:65px}.cycle-flow svg{max-height:none}.cycle-node text{font-size:19px}.cycle-node .cycle-node-note{font-size:14px}.cycle-details{font-size:14px}#theme10 .lesson-title{font-size:23px}#theme10 .code{font-size:14px}.cycle-ticket{min-width:60px;padding:6px 8px}}
+@media(prefers-reduced-motion:no-preference){.cycle-node.active rect,.cycle-node.active polygon{animation:cycle-pulse .8s ease-out}.cycle-output .new{animation:cycle-arrival .4s ease-out}.cycle-ticket.focus{animation:cycle-arrival .4s ease-out}@keyframes cycle-pulse{from{stroke-width:6}to{stroke-width:3.4}}@keyframes cycle-arrival{from{transform:translateY(-5px);opacity:.4}to{transform:translateY(0);opacity:1}}}
+
+.extra-lesson .lesson-title{font-size:26px;margin-bottom:18px}.extra-lesson .extra-settings{display:grid;grid-template-columns:2fr 1.5fr 90px 110px;gap:12px;align-items:end}.extra-settings label{font-size:14px}.extra-settings input,.extra-settings select{min-height:42px;padding:8px 10px}.extra-settings .wide{grid-column:1/-1}.extra-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}.extra-lesson .cycle-goal{min-height:24px}.extra-lesson .code{font-size:14px;line-height:1.55;padding:12px 7px;white-space:pre-wrap;margin-bottom:12px}.extra-lesson .code-line{display:flex;gap:8px;padding:0 5px;min-height:22px}.extra-lesson .line-no{width:18px;flex:0 0 18px;text-align:right;font-size:11px;opacity:.45;user-select:none}.extra-lesson .line-text{white-space:pre-wrap}.extra-lesson .code-line.current{background:#2e666c;box-shadow:inset 3px 0 #73d9c6}.extra-lesson .code-line.current.jump-stop{background:#7b393b;box-shadow:inset 3px 0 #ff958a}.extra-lesson .code-line.current.jump-continue{background:#765315;box-shadow:inset 3px 0 #ffd180}.extra-lesson .code-line.skipped{opacity:.5;text-decoration:line-through}.extra-terminal{font:15px/1.65 Consolas,monospace;white-space:pre-wrap;min-height:44px;margin:0;padding:10px;background:#f2eee6;border:1px solid #d6ccbb;border-radius:5px;overflow-wrap:anywhere}.extra-vars{display:flex;gap:6px 16px;flex-wrap:wrap;margin:10px 0;font:16px Consolas,monospace}.extra-vars span{padding:3px 0}.extra-lesson .cycle-flow svg{max-height:360px}.nested-grid{display:grid;gap:5px;margin-top:12px}.nested-row{display:grid;grid-template-columns:50px 1fr;gap:7px;align-items:center}.nested-row-label{font:13px Consolas,monospace;color:var(--navy)}.nested-cells{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:5px}.nested-cell{min-height:40px;border:1px solid #d7cebf;border-radius:4px;background:#ede9e2;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:4px;font:15px Consolas,monospace}.nested-cell small{font:10px "Segoe UI",sans-serif}.nested-cell.printed{background:#d8eeea}.nested-cell.continue{background:#ffebca}.nested-cell.break{background:#f9deda}.nested-cell.current{outline:2px solid var(--navy);outline-offset:1px}.nested-cell.outside{background:transparent;border-style:dashed;opacity:.25}.nested-input-row{margin-bottom:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:5px;border:1px solid transparent;border-radius:4px}.nested-input-row.active{border-color:var(--navy)}.nested-input-row b{font-size:12px;font-weight:500;min-width:66px}.nested-input-row .nested-cell{min-width:38px;min-height:38px}.extra-lesson .cycle-status{min-height:48px;font-size:15px}.array-board{position:relative;padding-top:37px;margin:0 0 8px}.array-cells{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}.array-cell{min-width:0;text-align:center;position:relative}.array-index{font:13px Consolas,monospace;color:var(--navy);padding-bottom:5px}.array-value{min-height:49px;display:flex;align-items:center;justify-content:center;background:#d8eeea;border:1px solid #b8cdc8;border-radius:4px;font:20px Consolas,monospace;padding:3px;overflow-wrap:anywhere}.array-cell.inactive .array-value{background:#e8e5de;color:#7e807e;border-color:#d5d0c8}.array-cell.current .array-value{outline:2px solid var(--navy);outline-offset:1px}.array-cell.src .array-value{outline:3px solid #147872;outline-offset:1px}.array-cell.dest .array-value{outline:3px solid #aa650b;background:#ffebca;outline-offset:1px}.array-note{font-size:11px;min-height:22px;line-height:1.3;margin-top:6px}.array-copy-svg{position:absolute;top:0;left:0;width:100%;height:40px;overflow:visible;pointer-events:none}.array-copy-label{font:13px Consolas,monospace;text-align:center;position:absolute;left:0;right:0;top:0}.array-ghost{position:absolute;z-index:2;background:#ffebca;border:2px solid #aa650b;border-radius:5px;width:40px;min-height:35px;text-align:center;padding:3px;font:19px Consolas,monospace;pointer-events:none}.array-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 13px;margin:12px 0}.array-summary div{border-top:1px solid #d5ccbc;padding-top:5px}.array-summary dt{font-size:12px}.array-summary dd{margin:3px 0 0;font:18px Consolas,monospace}.extra-lesson .array-flow svg{max-height:235px}.extra-lesson .cycle-visual h3:not(:first-child){margin-top:14px}.extra-lesson .cycle-route{font-size:13px;padding-top:8px;min-height:28px}.extra-lesson .extra-help{font-size:14px;margin-top:8px}.array-cell .array-value.pulse{animation:extra-pulse .6s ease-out}@keyframes extra-pulse{0%{transform:scale(1.08);background:#ffebca}100%{transform:scale(1);background:#d8eeea}}
+@media(max-width:1150px){.extra-lesson .cycle-visual{display:block}.extra-lesson .cycle-workspace{grid-template-columns:1fr}.extra-lesson .cycle-flow svg{max-height:330px}.extra-lesson .array-flow svg{max-height:235px}}
+@media(max-width:760px){.extra-lesson .extra-settings{grid-template-columns:1fr 1fr}.extra-settings .example,.extra-settings .wide{grid-column:1/-1}.extra-inputs{grid-template-columns:1fr}.extra-lesson .lesson-title{font-size:23px}.extra-lesson .code{font-size:13px}.array-cells{gap:3px}.array-value{font-size:16px;min-height:43px}.array-index{font-size:11px}.array-note{font-size:10px}.nested-row{grid-template-columns:40px 1fr}.nested-cells{gap:3px}.nested-cell{font-size:12px;min-height:33px}.extra-lesson .cycle-flow svg{max-height:none}.array-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.array-copy-label{font-size:11px}}
+@media(max-width:760px){.array-note{overflow-wrap:anywhere;line-height:1.15;min-height:34px}}
+@media(prefers-reduced-motion:reduce){.array-cell .array-value.pulse{animation:none}}
+
+#theme9{--c-next:#147872;--c-stop:#bc3e39}#theme9 .m9-settings{grid-template-columns:minmax(240px,2fr) minmax(140px,1fr) 100px 100px 100px}#theme9 .m9-settings .example{grid-column:auto}#theme9 .cycle-flow svg{max-height:300px}#theme9 .m9-scene{min-height:122px;margin:4px 0 12px}#theme9 .m9-tank-scene{display:flex;gap:18px;align-items:center}#theme9 .m9-tank{position:relative;height:130px;width:150px;flex:0 0 150px;border:2px solid #547780;border-top:1px dashed #9babaa;border-radius:0 0 12px 12px;overflow:hidden;background:#f3f3eb}#theme9 .m9-water{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(#72c9cc,#278f9b);transition:height .65s ease-out}#theme9 .m9-water::before{content:'';position:absolute;left:0;right:0;top:0;border-top:3px solid #c3f0ec}#theme9 .m9-target{position:absolute;left:0;right:0;border-top:2px dashed #9c5318;z-index:1}#theme9 .m9-tank-label{font-size:14px;line-height:1.6}#theme9 .m9-tank-label strong{display:block;font:26px Consolas,monospace}#theme9 .m9-drop{position:absolute;left:65px;top:0;width:16px;height:22px;border-radius:70% 30% 65% 35%;background:#258a99;animation:m9-drop .55s ease-in forwards;z-index:2}#theme9 .m9-input-queue{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-top:8px}#theme9 .m9-input-card{display:flex;flex-direction:column;justify-content:space-between;align-items:center;min-width:65px;max-width:100px;flex:0 1 auto;padding:7px 8px;gap:4px;border:1px solid #d2cbbb;border-radius:5px;background:#eeeae2}#theme9 .m9-input-card strong{font:23px Consolas,monospace}#theme9 .m9-input-card small{font-size:11px;text-align:center;line-height:1.2}#theme9 .m9-input-card.added,#theme9 .m9-input-card.valid{background:#d8eeea}#theme9 .m9-input-card.invalid{background:#ffebca}#theme9 .m9-input-card.sentinel{background:#f9deda}#theme9 .m9-input-card.current{outline:2px solid var(--navy);outline-offset:1px}#theme9 .m9-input-caption{font-size:13px;margin-top:9px}#theme9 .m9-condition{padding:9px 12px;border-left:4px solid #9baba6;background:#f2eee6;min-height:60px;margin:10px 0}#theme9 .m9-condition strong{display:block;font:17px/1.5 Consolas,monospace}#theme9 .m9-condition span{font-size:14px}#theme9 .m9-condition.is-true{border-color:#147872;background:#e1f0e9}#theme9 .m9-condition.is-false{border-color:#bc3e39;background:#f7e8e2}#theme9 .cycle-status{min-height:48px}#theme9 .extra-help{font-size:13px;line-height:1.5;margin-top:8px}@keyframes m9-drop{to{transform:translateY(100px);opacity:0}}
+@media(max-width:1350px){#theme9 .m9-settings{grid-template-columns:2fr 1.5fr repeat(3,85px)}}
+@media(max-width:1150px){#theme9 .m9-settings{grid-template-columns:repeat(3,minmax(0,1fr))}#theme9 .m9-settings .example{grid-column:1/3}#theme9 .cycle-visual{display:block}}
+@media(max-width:760px){#theme9 .m9-settings{grid-template-columns:repeat(3,minmax(0,1fr))}#theme9 .m9-settings .example,#theme9 #m9PresetGroup{grid-column:1/-1}#theme9 .m9-tank{width:120px;flex-basis:120px}#theme9 .m9-tank-label{font-size:13px}#theme9 .m9-input-card{min-width:55px}#theme9 .m9-condition strong{font-size:15px}}
+@media(prefers-reduced-motion:reduce){#theme9 .m9-water{transition:none}#theme9 .m9-drop{animation:none;display:none}}
+
+#theme8{--c-next:#147872;--c-stop:#bc3e39}#theme8 .m8-settings{grid-template-columns:minmax(230px,2fr) minmax(170px,1.2fr) 80px 100px 100px}#theme8 .m8-settings .example{grid-column:auto}#theme8 .m8-scene{position:relative;min-height:115px;margin:6px 0 12px}#theme8 .m8-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}#theme8 .m8-item{min-width:0;text-align:center;padding:7px 5px;background:#ede9e2;border:1px solid #d5cdbf;border-radius:5px;position:relative}#theme8 .m8-item.current{outline:2px solid var(--navy);outline-offset:1px}#theme8 .m8-item.done{background:#d8eeea}#theme8 .m8-item small{display:block;font-size:12px;line-height:1.3}#theme8 .m8-parcel{height:50px;width:57px;background:#d8bc8c;border:1px solid #9a784f;margin:2px auto 7px;position:relative;border-radius:3px}#theme8 .m8-parcel:before{content:'';position:absolute;top:0;bottom:0;left:23px;width:9px;background:#f1dfb7;border-left:1px solid #c9ac7b;border-right:1px solid #c9ac7b}#theme8 .m8-sticker{position:absolute;left:7px;top:16px;min-width:23px;padding:1px 4px;background:#fffdf8;border:1px solid #bdac8c;font:18px Consolas,monospace}#theme8 .m8-label-arrive .m8-sticker{animation:m8-sticker .5s ease-out}#theme8 .m8-progress{font-size:14px;margin-top:9px}#theme8 .m8-money strong{font:20px Consolas,monospace;display:block;margin:7px 0 3px}#theme8 .m8-money .m8-bar{height:36px;display:flex;justify-content:center;align-items:end;margin:5px 0 0}#theme8 .m8-money .m8-bar i{display:block;background:#8eb4aa;width:65%;min-height:2px;border-radius:3px 3px 0 0}#theme8 .m8-item.done .m8-bar i{background:#258b7e}#theme8 .m8-total{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:13px;padding:10px 12px;border:1px solid #9ebbb3;border-radius:5px;background:#e3f0eb;font-size:14px}#theme8 .m8-total strong{font:25px Consolas,monospace;white-space:nowrap}#theme8 .m8-total.pulse{animation:m8-total .6s ease-out}#theme8 .m8-transfer{position:absolute;z-index:4;border-radius:20px;background:#ffebca;border:2px solid #aa650b;padding:3px 8px;font:17px Consolas,monospace;pointer-events:none;white-space:nowrap}#theme8 .m8-fold-scene{display:flex;gap:20px;align-items:center;min-height:120px}#theme8 .m8-sheet-stack{position:relative;flex:0 0 140px;width:140px;height:105px;perspective:500px;display:flex;align-items:end;padding-bottom:10px}#theme8 .m8-sheet-stack svg{width:140px;height:95px}#theme8 .m8-fold-flap{position:absolute;top:15px;left:0;width:70px;height:60px;background:#f7efe0;border:2px solid #668d8c;border-right-style:dashed;transform-origin:right center;animation:m8-fold .65s ease-in-out forwards}#theme8 .m8-fold-label{font-size:14px;line-height:1.6}#theme8 .m8-fold-label strong{display:block;font:27px Consolas,monospace}#theme8 .m8-steps{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}#theme8 .m8-step{font:15px Consolas,monospace;width:33px;height:30px;border:1px solid #d5cdbf;border-radius:4px;text-align:center;padding:5px;background:#ede9e2}#theme8 .m8-step.done{background:#d8eeea}#theme8 .m8-step.current{outline:2px solid var(--navy);outline-offset:1px}#theme8 .m8-anatomy{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:6px 0 16px}#theme8 .m8-anatomy div{padding:7px;border:1px solid #d5cdbf;border-radius:4px;background:#f2eee6;min-width:0}#theme8 .m8-anatomy div.active{background:#d8eeea;border:2px solid #147872;padding:6px}#theme8 .m8-anatomy small{display:block;font-size:11px;line-height:1.3;margin-bottom:4px}#theme8 .m8-anatomy code{font:15px Consolas,monospace}#theme8 .m8-header-part.active{background:#447e80;border-radius:3px;padding:2px;color:#fff}#theme8 .m8-trace{margin-top:18px}#theme8 table{width:100%;border-collapse:collapse;font-size:13px}#theme8 th{font-weight:500;font-size:12px;color:#38576a;text-align:left;line-height:1.3}#theme8 th,#theme8 td{padding:6px 7px;border-bottom:1px solid #ddd4c7;vertical-align:top}#theme8 td{font-family:Consolas,monospace}#theme8 tr.current td{background:#e3f0eb}#theme8 .m8-empty-row td{font:13px 'Segoe UI',sans-serif}#theme8 .m8-table-scroll{overflow-x:auto}#theme8 .cycle-flow svg{max-height:280px}#theme8 .cycle-status{min-height:50px}#theme8 .extra-help{font-size:13px;line-height:1.45;margin-top:8px}
+@keyframes m8-sticker{from{transform:translateY(-22px) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}@keyframes m8-total{50%{box-shadow:0 0 0 4px #a6d8c8}}@keyframes m8-fold{from{transform:rotateY(0)}to{transform:rotateY(175deg)}}
+@media(max-width:1350px){#theme8 .m8-settings{grid-template-columns:2fr 1.5fr 70px 90px 90px}}
+@media(max-width:1150px){#theme8 .m8-settings{grid-template-columns:repeat(3,minmax(0,1fr))}#theme8 .m8-settings .example{grid-column:1/3}#theme8 .cycle-visual{display:block}}
+@media(max-width:760px){#theme8 .m8-settings .example{grid-column:1/-1}#theme8 .m8-settings{grid-template-columns:repeat(2,minmax(0,1fr))}#theme8 .m8-anatomy code{font-size:13px}#theme8 .m8-anatomy div{padding:6px 4px}#theme8 .m8-anatomy div.active{padding:5px 3px}#theme8 .m8-items{gap:6px}#theme8 .m8-parcel{width:48px;height:46px}#theme8 .m8-item small{font-size:10px}#theme8 .m8-item{padding:5px 3px}#theme8 .m8-money strong{font-size:16px}#theme8 .m8-fold-scene{gap:10px}#theme8 .m8-fold-label{font-size:13px}#theme8 .m8-sheet-stack{flex-basis:120px}#theme8 .m8-fold-label strong{font-size:22px}#theme8 th,#theme8 td{padding:5px 4px}#theme8 .m8-anatomy small{font-size:10px}}
+@media(prefers-reduced-motion:reduce){#theme8 .m8-label-arrive .m8-sticker,#theme8 .m8-total.pulse,#theme8 .m8-fold-flap{animation:none}#theme8 .m8-fold-flap{display:none}}
+
+</style></head>
+
+<body><main>
+
+<header><div><h1 id="appTitle"></h1><p id="appIntro"></p></div><div class="lang"><label for="language" id="langLabel"></label><select id="language"><option value="ro">Română</option><option value="ru">Русский</option></select></div></header>
+
+<div class="app-grid"><nav id="topicNavigation" class="topic-menu"><h2 id="topicsTitle"></h2><div id="topicButtons" class="topic-buttons"></div></nav><div class="app-content">
+
+<section id="theme8" class="extra-lesson" hidden aria-labelledby="m8Title">
+<h2 id="m8Title" class="lesson-title"></h2>
+<div class="extra-settings m8-settings">
+ <div class="example"><label id="m8ModeLabel" for="m8Mode"></label><select id="m8Mode"><option value="labels"></option><option value="savings"></option><option value="fold"></option></select></div>
+ <div><label id="m8PresetLabel" for="m8Preset"></label><select id="m8Preset"><option value="normal"></option><option value="single"></option><option value="zero"></option><option value="custom" disabled></option></select></div>
+ <div><label id="m8NLabel" for="m8N"></label><input id="m8N" type="number" min="0" max="8" step="1" value="4"></div>
+ <div id="m8FirstGroup" hidden><label id="m8FirstLabel" for="m8First"></label><input id="m8First" type="number" min="0" max="100" step="1" value="10"></div>
+ <div id="m8DeltaGroup" hidden><label id="m8DeltaLabel" for="m8Delta"></label><input id="m8Delta" type="number" min="0" max="20" step="1" value="5"></div>
+</div>
+<p id="m8Goal" class="cycle-goal"></p><p id="m8Error" class="error" role="alert"></p>
+<div class="cycle-controls"><button id="m8Back"></button><button id="m8Next" class="primary"></button><button id="m8Play" aria-pressed="false"></button><button id="m8Restart"></button><span id="m8Progress" class="cycle-progress"></span><label class="cycle-speed"><span id="m8SpeedLabel"></span><select id="m8Speed"><option value="1500"></option><option value="900" selected></option><option value="450"></option></select></label></div>
+<div id="m8Workspace" class="cycle-workspace">
+ <section class="cycle-visual"><h3 id="m8VisualTitle"></h3><div id="m8Scene" class="m8-scene"></div><div id="m8Vars" class="extra-vars"></div><p id="m8Status" class="cycle-status" aria-live="polite"></p><div id="m8Flow" class="cycle-flow"></div><p id="m8Route" class="cycle-route"></p></section>
+ <section class="cycle-program"><h3 id="m8CodeTitle"></h3><pre id="m8Code" class="code" aria-label="C++"></pre><div id="m8Anatomy" class="m8-anatomy"></div><h3 id="m8OutputTitle"></h3><pre id="m8Output" class="extra-terminal" aria-live="polite"></pre><div class="m8-trace"><h3 id="m8TraceTitle"></h3><div class="m8-table-scroll"><table><thead id="m8Head"></thead><tbody id="m8Rows"></tbody></table></div><p id="m8TraceNote" class="extra-help"></p></div></section>
+</div>
+<details class="cycle-details"><summary id="m8ExplainTitle"></summary><p id="m8Explain"></p></details>
+</section>
+
+<section id="theme9" class="extra-lesson" hidden aria-labelledby="m9Title">
+<h2 id="m9Title" class="lesson-title"></h2>
+<div class="extra-settings m9-settings">
+ <div class="example"><label for="m9Mode" id="m9ModeLabel"></label><select id="m9Mode"><option value="tank"></option><option value="sentinel"></option><option value="validation"></option></select></div>
+ <div id="m9PresetGroup"><label for="m9Preset" id="m9PresetLabel"></label><select id="m9Preset"></select></div>
+ <div id="m9StartGroup"><label for="m9Start" id="m9StartLabel"></label><input id="m9Start" type="number" min="0" max="20" step="1" value="2"></div>
+ <div id="m9TargetGroup"><label for="m9Target" id="m9TargetLabel"></label><input id="m9Target" type="number" min="1" max="20" step="1" value="10"></div>
+ <div id="m9PortionGroup"><label for="m9Portion" id="m9PortionLabel"></label><input id="m9Portion" type="number" min="1" max="10" step="1" value="3"></div>
+ <div class="wide" id="m9InputGroup" hidden><label for="m9Input" id="m9InputLabel"></label><input id="m9Input" value="12 8 0 99" spellcheck="false" autocomplete="off"></div>
+</div>
+<p id="m9Goal" class="cycle-goal"></p><p id="m9Error" class="error" role="alert"></p>
+<div class="cycle-controls"><button id="m9Back"></button><button id="m9Next" class="primary"></button><button id="m9Play" aria-pressed="false"></button><button id="m9Restart"></button><span id="m9Progress" class="cycle-progress"></span><label class="cycle-speed"><span id="m9SpeedLabel"></span><select id="m9Speed"><option value="1500"></option><option value="900" selected></option><option value="450"></option></select></label></div>
+<div id="m9Workspace" class="cycle-workspace">
+ <section class="cycle-visual"><h3 id="m9VisualTitle"></h3><div id="m9Scene" class="m9-scene"></div><div id="m9Vars" class="extra-vars"></div><p id="m9Status" class="cycle-status" aria-live="polite"></p><div id="m9Condition" class="m9-condition"></div><div id="m9Flow" class="cycle-flow"></div><p id="m9Route" class="cycle-route"></p></section>
+ <section class="cycle-program"><h3 id="m9CodeTitle"></h3><pre id="m9Code" class="code" aria-label="C++"></pre><h3 id="m9OutputTitle"></h3><pre id="m9Output" class="extra-terminal" aria-live="polite"></pre><p id="m9OutputNote" class="extra-help"></p></section>
+</div>
+<details class="cycle-details"><summary id="m9ExplainTitle"></summary><p id="m9Explain"></p></details>
+</section>
+
+<section id="theme10" hidden aria-labelledby="t10Title">
+ <h2 id="t10Title" class="lesson-title"></h2>
+ <div class="cycle-settings">
+  <div class="cycle-example"><label id="t10ExampleLabel" for="t10Example"></label><select id="t10Example"><option value="break"></option><option value="continue"></option><option value="read"></option><option value="compare"></option><option value="validate"></option></select></div>
+  <div id="t10LoopGroup"><label id="t10LoopLabel" for="t10Loop"></label><select id="t10Loop"><option value="for">for</option><option value="while">while</option><option value="do">do-while</option></select></div>
+  <div id="t10NGroup"><label id="t10NLabel" for="t10N"></label><input id="t10N" type="number" min="0" max="8" step="1" value="5"></div>
+  <div id="t10SpecialGroup"><label id="t10SpecialLabel" for="t10Special"></label><input id="t10Special" type="number" min="1" max="9" step="1" value="3"></div>
+  <div id="t10ValuesGroup" hidden><label id="t10ValuesLabel" for="t10Values"></label><input id="t10Values" value="12 -3 8 0 15" autocomplete="off" spellcheck="false"></div>
+ </div>
+ <p id="t10Goal" class="cycle-goal"></p>
+ <label id="t10BugGroup" class="cycle-bug" hidden><input id="t10Bug" type="checkbox"><span id="t10BugLabel"></span></label>
+ <p id="t10Error" class="error" role="alert"></p>
+ <div class="cycle-controls">
+  <button id="t10Back"></button><button id="t10Next" class="primary"></button><button id="t10Play"></button><button id="t10Restart"></button>
+  <span id="t10Progress" class="cycle-progress"></span>
+  <label class="cycle-speed"><span id="t10SpeedLabel"></span><select id="t10Speed"><option value="1500"></option><option value="900" selected></option><option value="500"></option></select></label>
+ </div>
+ <div class="cycle-workspace">
+  <section class="cycle-visual" aria-labelledby="t10FlowTitle">
+   <h3 id="t10FlowTitle"></h3>
+   <div id="t10Flow" class="cycle-flow"></div>
+   <p id="t10Status" class="cycle-status" aria-live="polite"></p>
+   <div id="t10Route" class="cycle-route"></div>
+  </section>
+  <section class="cycle-program" aria-labelledby="t10CodeTitle">
+   <h3 id="t10CodeTitle"></h3><pre id="t10Code" class="code" aria-label="C++"></pre>
+   <div id="t10Vars" class="cycle-vars"></div>
+   <h3 id="t10OutputTitle"></h3><div id="t10Output" class="cycle-output" aria-live="polite"></div>
+  </section>
+ </div>
+ <section class="cycle-trail"><h3 id="t10TrailTitle"></h3><div id="t10Trail"></div></section>
+ <details class="cycle-details"><summary id="t10ExplainTitle"></summary><p id="t10Explain"></p></details>
+</section>
+
+<script>
+(function(root){
+'use strict';
+function build(c){
+ const lines=[],map={},events=[],nodes=[],edges=[];
+ const line=(key,text)=>{map[key]=lines.length;lines.push(text);};
+ const state={i:null,x:null,sum:0,condition:null,output:[],marks:{},read:0,iterations:0};
+ const put=(type,key,next,data={})=>events.push(JSON.parse(JSON.stringify({...state,type,node:key,next,line:map[key]??-1,...data})));
+ const predicate=(key,text,value,nextTrue,nextFalse)=>{state.condition={text,value};put('test',key,value?nextTrue:nextFalse);return value;};
+ const mode=c.mode,loop=c.loop||'for';
+ if(mode==='break'||mode==='continue'||mode==='compare'){
+  const action=mode==='compare'?null:mode;
+  line('limit',`int n = ${c.n};`);line('init','int i = 1;');
+  if(loop==='for')line('condition','for (; i <= n; i++) {');
+  else if(loop==='while')line('condition','while (i <= n) {');else line('open','do {');
+  if(action){line('check',`    if (i == ${c.special}) {`);if(action==='continue'&&loop==='while'&&!c.bug)line('early','        i++;');line('jump',`        ${action};`);line('endcheck','    }');}
+  line('body',"    cout << i << ' ';");
+  if(loop!=='for')line('advance','    i++;');else map.advance=map.condition;
+  line('close',loop==='do'?'} while (i <= n);':'}');if(loop==='do')map.condition=map.close;
+  line('exit','cout << "Gata";');
+  state.i=1;put('init','init',loop==='do'?'body':'condition');
+  let repeated=0,last=-1,ended=false;
+  function body(){
+   state.iterations++;
+   if(action){
+    const target=action==='continue'&&loop==='while'&&!c.bug?'early':'jump';
+    if(predicate('check',`${state.i} == ${c.special}`,state.i===c.special,target,'body')){
+     if(action==='break'){state.marks[state.i]='break';put('break','jump','exit');ended=true;return;}
+     const omitted=state.i;state.marks[omitted]='continue';
+     if(loop==='while'&&!c.bug){state.i++;put('advance','early','jump',{early:true,omitted});}
+     put('continue','jump',loop==='for'?'advance':'condition',{omitted});
+     if(loop==='for'){state.i++;put('advance','advance','condition');}
+     return;
+    }
+   }
+   state.marks[state.i]='printed';state.output.push(String(state.i));put('print','body','advance');state.i++;put('advance','advance','condition');
+  }
+  if(loop==='do'){
+   do{body();}while(!ended&&predicate('condition',`${state.i} <= ${c.n}`,state.i<=c.n,'body','exit'));
+  }else{
+   while(predicate('condition',`${state.i} <= ${c.n}`,state.i<=c.n,action?'check':'body','exit')){
+    if(state.i===last)repeated++;else repeated=0;last=state.i;
+    if(repeated===3){put('paused','condition',null,{reason:'infinite'});return {lines,map,events};}
+    body();if(ended)break;
+   }
+  }
+  state.output.push('Gata');put('done','exit',null,{reason:ended?'break':'condition'});
+ }else if(mode==='read'){
+  line('init','int x, suma = 0;');line('condition','while (true) {');line('read','    cin >> x;');line('zero','    if (x == 0)');line('jump','        break;');line('negative','    if (x < 0)');line('skip','        continue;');line('body','    suma += x;');line('close','}');line('exit','cout << suma;');
+  put('init','init','condition');let pos=0;
+  while(true){
+   predicate('condition','true',true,'read','exit');
+   if(pos===c.values.length){put('paused','read',null,{reason:'input'});break;}
+   state.x=c.values[pos++];state.read=pos;state.iterations++;put('read','read','zero');
+   if(predicate('zero',`${state.x} == 0`,state.x===0,'jump','negative')){state.marks[pos]='break';put('break','jump','exit');state.output=[String(state.sum)];put('done','exit',null,{reason:'break'});break;}
+   if(predicate('negative',`${state.x} < 0`,state.x<0,'skip','body')){state.marks[pos]='continue';put('continue','skip','condition');continue;}
+   state.sum+=state.x;state.marks[pos]='added';put('sum','body','condition');
+  }
+ }else if(mode==='validate'){
+  line('init','int elevi;');line('open','do {');line('read','    cin >> elevi;');line('condition','} while (elevi < 1 || elevi > 30);');line('exit','cout << elevi;');
+  put('init','init','read');let pos=0;
+  do{
+   if(pos===c.values.length){put('paused','read',null,{reason:'input'});break;}
+   state.x=c.values[pos++];state.read=pos;state.iterations++;put('read','read','condition');
+   const invalid=state.x<1||state.x>30;
+   state.marks[pos]=invalid?'invalid':'valid';
+   predicate('condition',`${state.x} < 1 || ${state.x} > 30`,invalid,'read','exit');
+   if(!invalid){state.output=[String(state.x)];put('done','exit',null,{reason:'valid'});break;}
+  }while(true);
+ }
+ return {lines,map,events};
+}
+root.CycleLesson={build};if(typeof module!=='undefined')module.exports={build};
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id),S='http://www.w3.org/2000/svg';
+let lang='ro',at=0,trace,config,invalid='',timer=null,motion=null;
+const T=(ro,ru)=>lang==='ro'?ro:ru;
+const text=(tag,v,cls)=>{const e=document.createElement(tag);if(v!==undefined)e.textContent=v;if(cls)e.className=cls;return e;};
+const svg=(tag,attrs={},v)=>{const e=document.createElementNS(S,tag);for(const[k,val]of Object.entries(attrs))e.setAttribute(k,val);if(v!==undefined)e.textContent=v;return e;};
+function stop(){if(timer!==null)clearTimeout(timer);timer=null;$('t10Play').textContent=T('▶ Redare','▶ Воспроизвести');$('t10Play').setAttribute('aria-pressed','false');}
+function labels(){
+ const labels={t10Title:T('Tema 10 · break, continue și condiția ciclului','Тема 10 · break, continue и условие цикла'),t10ExampleLabel:T('Exemplu','Пример'),t10LoopLabel:T('Ciclu','Цикл'),t10NLabel:'n (0–8)',t10SpecialLabel:T('La i =','При i ='),t10ValuesLabel:T('Ce se tastează la citirile cin','Что вводится при чтениях cin'),t10BugLabel:T('Arată eroarea: se omite i++ din ramura cu continue','Показать ошибку: убрать i++ из ветви с continue'),t10Back:T('← Înapoi','← Назад'),t10Next:T('Pasul următor →','Следующий шаг →'),t10Restart:T('↺ De la început','↺ Сначала'),t10FlowTitle:T('Traseul execuției','Ход выполнения'),t10CodeTitle:T('Codul executat','Выполняемый код'),t10OutputTitle:T('Pe ecran','На экране'),t10SpeedLabel:T('Viteză','Скорость'),t10ExplainTitle:T('Regula ilustrată','Показанное правило')};
+ for(const[id,v]of Object.entries(labels))$(id).textContent=v;
+ [T('break · oprirea ciclului','break · выход из цикла'),T('continue · omiterea unei afișări','continue · пропуск одного вывода'),T('Citiri cin · negativele se omit, 0 oprește','Ввод cin · пропустить отрицательные, остановиться на 0'),T('for, while, do-while · ce se întâmplă la n = 0','for, while, do-while · что происходит при n = 0'),T('do-while · se repetă citirea unei valori invalide','do-while · повтор ввода недопустимого значения')].forEach((v,i)=>$('t10Example').options[i].textContent=v);
+ [T('Lent','Медленно'),T('Normal','Обычно'),T('Rapid','Быстро')].forEach((v,i)=>$('t10Speed').options[i].textContent=v);
+ if(timer===null)$('t10Play').textContent=T('▶ Redare','▶ Воспроизвести');
+}
+function visibility(){
+ const m=$('t10Example').value,counter=['break','continue','compare'].includes(m);
+ $('t10LoopGroup').hidden=!counter;$('t10NGroup').hidden=!counter;$('t10SpecialGroup').hidden=m!=='break'&&m!=='continue';$('t10ValuesGroup').hidden=counter;
+ $('t10Loop').options[2].disabled=m!=='compare';if(m!=='compare'&&$('t10Loop').value==='do')$('t10Loop').value='for';
+ $('t10BugGroup').hidden=!(m==='continue'&&$('t10Loop').value==='while');
+}
+function prepare(){
+ stop();visibility();let mode=$('t10Example').value,n=Number($('t10N').value),special=Number($('t10Special').value),parts=$('t10Values').value.trim().split(/[\s,;]+/).filter(Boolean),values=parts.map(Number),counter=['break','continue','compare'].includes(mode);
+ invalid='';
+ if(counter&&(!/^\d+$/.test($('t10N').value)||n<0||n>8))invalid='n';
+ else if((mode==='break'||mode==='continue')&&(!/^\d+$/.test($('t10Special').value)||special<1||special>9))invalid='special';
+ else if(!counter&&(values.length>12||parts.some(p=>!/^[-+]?\d+$/.test(p))||values.some(v=>!Number.isSafeInteger(v)||Math.abs(v)>1000)))invalid='values';
+ if(!invalid){config={mode,n,special,loop:counter?$('t10Loop').value:mode==='read'?'while':'do',values,bug:mode==='continue'&&$('t10Loop').value==='while'&&$('t10Bug').checked};trace=window.CycleLesson.build(config);at=0;}
+ labels();render(false);
+}
+function describe(e){
+ if(e.type==='init')return config.mode==='read'?T('suma = 0. Urmează prima verificare a ciclului.','suma = 0. Далее первая проверка условия цикла.'):config.mode==='validate'?T('Prima citire are loc înaintea verificării condiției.','Первый ввод выполняется до проверки условия.'):T(`i = 1. Urmează ${config.loop==='do'?'corpul ciclului':'verificarea condiției'}.`,`i = 1. Далее ${config.loop==='do'?'тело цикла':'проверка условия'}.`);
+ if(e.type==='test'){
+  const v=`${e.condition.text} → ${e.condition.value}. `;
+  if(e.node==='check')return v+(e.condition.value?T(`Se intră în ramura cu ${config.mode}.`,`Выполняется ветвь с ${config.mode}.`):T('Afișarea poate fi executată.','Можно выполнить вывод.'));
+  if(e.node==='zero')return v+(e.condition.value?T('Urmează break.','Далее break.'):T('Se verifică dacă încasarea este negativă.','Проверяется, отрицателен ли платёж.'));
+  if(e.node==='negative')return v+(e.condition.value?T('Urmează continue.','Далее continue.'):T('Valoarea intră în sumă.','Значение добавляется к сумме.'));
+  if(config.mode==='validate')return v+(e.condition.value?T('Valoarea este invalidă: se revine la cin.','Значение недопустимо: возврат к cin.'):T('Valoarea este validă: se iese din ciclu.','Значение допустимо: выход из цикла.'));
+  return v+(e.condition.value?T('Se intră în corpul ciclului.','Выполняется тело цикла.'):T('Corpul nu se mai execută. Urmează instrucțiunea de după ciclu.','Тело больше не выполняется. Далее команда после цикла.'));
+ }
+ if(e.type==='print')return T(`Se afișează ${e.i}. Urmează i++.`,`Выводится ${e.i}. Далее i++.`);
+ if(e.type==='advance')return e.early?T(`i crește la ${e.i} înainte de continue. Afișarea lui ${e.omitted} va fi sărită.`,`i увеличивается до ${e.i} перед continue. Вывод ${e.omitted} будет пропущен.`):T(`i++: i devine ${e.i}. Condiția va fi verificată din nou.`,`i++: i становится ${e.i}. Условие будет проверено снова.`);
+ if(e.type==='continue')return config.mode==='read'?T('continue sare adunarea. Se revine la while, apoi la următorul cin.','continue пропускает сложение. Возврат к while, затем к следующему cin.'):config.loop==='for'?T(`Se sare afișarea lui ${e.omitted}. continue duce la i++, apoi la condiție.`,`Вывод ${e.omitted} пропущен. continue ведёт к i++, затем к условию.`):T(`Se sare afișarea lui ${e.omitted} și i++ de la sfârșit. continue duce direct la condiție.`,`Вывод ${e.omitted} и i++ в конце пропущены. continue ведёт прямо к условию.`);
+ if(e.type==='break')return T('break scoate execuția din ciclu. Urmează cout de după ciclu.','break выводит выполнение из цикла. Далее cout после цикла.');
+ if(e.type==='read')return T(`cin citește ${e.x}. Se păstrează o singură valoare curentă.`,`cin считывает ${e.x}. Хранится одно текущее значение.`);
+ if(e.type==='sum')return T(`Se adună ${e.x}: suma = ${e.sum}. Urmează următoarea citire.`,`Добавляется ${e.x}: suma = ${e.sum}. Далее следующий ввод.`);
+ if(e.type==='paused')return e.reason==='infinite'?T('Simularea este oprită: i nu mai crește. Programul ar repeta la infinit aceeași verificare.','Симуляция остановлена: i больше не растёт. Программа бесконечно повторяла бы ту же проверку.'):T('Programul așteaptă încă o valoare la cin. Se pot adăuga valori în câmpul de intrare.','Программа ждёт ещё одно значение в cin. Можно добавить значения в поле ввода.');
+ if(e.type==='done')return config.mode==='read'?T(`După ciclu se afișează suma: ${e.sum}.`,`После цикла выводится сумма: ${e.sum}.`):config.mode==='validate'?T(`Se afișează valoarea validă ${e.x}.`,`Выводится допустимое значение ${e.x}.`):e.reason==='break'?T('Se afișează Gata, instrucțiunea de după ciclu.','Выводится Gata: выполнена команда после цикла.'):T('Condiția falsă a încheiat ciclul. Se afișează Gata.','Ложное условие завершило цикл. Выводится Gata.');
+ return '';
+}
+function goal(){
+ return config.mode==='break'?T(`i pornește de la 1. La i = ${config.special}, break oprește ciclul înainte de afișare.`,`i начинается с 1. При i = ${config.special} break завершает цикл до вывода.`):config.mode==='continue'?T(`La i = ${config.special} se omite doar afișarea din acea iterație. Ciclul poate continua.`,`При i = ${config.special} пропускается только вывод этой итерации. Цикл может продолжиться.`):config.mode==='read'?T('Se tastează încasări pe rând. Negativele se omit. 0 încheie citirea și se afișează suma.','Платежи вводятся по одному. Отрицательные пропускаются. 0 завершает ввод, затем выводится сумма.'):config.mode==='compare'?T('Cu n = 0, for și while nu execută corpul. do-while execută corpul înaintea primului test.','При n = 0 for и while не выполняют тело. do-while выполняет тело до первой проверки.'):T('Se citește un număr de elevi între 1 și 30. O valoare invalidă cere o nouă citire.','Вводится число учеников от 1 до 30. Недопустимое значение требует нового ввода.');
+}
+function graph(e,animate){
+ if(motion!==null)cancelAnimationFrame(motion);motion=null;
+ const root=svg('svg',{viewBox:'0 0 650 455',role:'img','aria-label':T('Schema execuției: ','Схема выполнения: ')+describe(e)}),defs=svg('defs');
+ for(const[k,color]of Object.entries({base:'#b4bbb7',active:'#147872',stop:'#bc3e39',skip:'#aa650b'})){const mark=svg('marker',{id:'cycleArrow-'+k,viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});mark.append(svg('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:color}));defs.append(mark);}root.append(defs);
+ const ns=[],es=[];
+ const N=(id,x,y,title,kind='rect',note='')=>ns.push({id,x,y,title,kind,note});
+ const E=(a,b,d,label='',lx=0,ly=0)=>es.push({a,b,d,label,lx,ly});
+ const action=config.mode==='break'||config.mode==='continue',counter=action||config.mode==='compare';
+ if(counter&&config.loop==='do'){
+  N('init',210,32,'i = 1');N('body',210,125,'cout << i');N('advance',210,220,'i++');N('condition',210,315,'i <= n?','diamond');N('exit',505,315,'cout << "Gata"');
+  E('init','body','M210 53V104');E('body','advance','M210 146V199');E('advance','condition','M210 241V285');E('condition','body','M135 315H40V125H125','true',48,292);E('condition','exit','M285 315H420','false',332,302);
+ }else if(counter){
+  N('init',200,32,'i = 1');N('condition',200,110,'i <= n?','diamond');N('body',200,270,'cout << i');N('advance',200,350,'i++');N('exit',505,392,'cout << "Gata"');
+  E('init','condition','M200 53V80');E('condition','exit','M275 110H620V392H590','false',543,96);
+  E('body','advance','M200 291V329');E('advance','condition','M130 350H40V110H125');
+  if(action){
+   N('check',200,190,`i == ${config.special}?`,'diamond');
+   const early=config.mode==='continue'&&config.loop==='while'&&!config.bug;
+   N('jump',490,early?230:190,config.mode);
+   E('condition','check','M200 140V160','true',211,153);E('check','body','M200 220V249','false',212,239);
+   if(early){N('early',490,125,'i++','rect',T('înainte de continue','перед continue'));E('check','early','M275 190H350V125H420','true',303,177);E('early','jump','M490 146V209');}
+   else E('check','jump','M275 190H420','true',311,176);
+   if(config.mode==='break')E('jump','exit','M490 211V350H505V371');
+   else if(config.loop==='for')E('jump','advance','M490 211V350H270');
+   else E('jump','condition',early?'M560 230H595V60H340V110H275':'M490 169V110H275');
+  }else E('condition','body','M200 140V249','true',211,199);
+ }else if(config.mode==='read'){
+  root.setAttribute('viewBox','0 0 650 480');
+  N('init',190,30,'suma = 0');N('condition',190,105,'true','diamond');N('read',190,180,'cin >> x');N('zero',190,255,'x == 0?','diamond');N('negative',190,335,'x < 0?','diamond');N('body',190,425,'suma += x');N('jump',505,180,'break');N('skip',505,335,'continue');N('exit',505,255,'cout << suma');
+  E('init','condition','M190 51V75');E('condition','read','M190 135V159','true',202,151);E('read','zero','M190 201V225');E('zero','jump','M265 255H350V180H435','true',298,242);E('jump','exit','M505 201V234');E('zero','negative','M190 285V305','false',203,301);E('negative','skip','M265 335H435','true',329,321);E('negative','body','M190 365V404','false',204,388);E('skip','condition','M575 335H620V105H265');E('body','condition','M105 425H30V105H115');
+ }else{
+  N('init',215,35,'int elevi');N('read',215,135,'cin >> elevi');N('condition',215,275,'elevi < 1','diamond',T('sau elevi > 30?','или elevi > 30?'));N('exit',510,275,'cout << elevi');E('init','read','M215 56V114');E('read','condition','M215 156V235');E('condition','read','M110 275H35V135H130','true',43,250);E('condition','exit','M320 275H425','false',351,260);
+ }
+ const stopping=e.type==='break'||(e.type==='done'&&e.reason==='break'),skipping=e.type==='continue'||e.early,color=stopping?'stop':skipping?'skip':'active';
+ let route=null;
+ for(const edge of es){const active=edge.a===e.node&&edge.b===e.next;const p=svg('path',{d:edge.d,class:'cycle-edge'+(active?' active '+color:''),'marker-end':'url(#cycleArrow-'+(active?color:'base')+')','data-edge':edge.a+'>'+edge.b});root.append(p);if(active)route=p;if(edge.label)root.append(svg('text',{x:edge.lx,y:edge.ly,class:'cycle-edge-label'},edge.label));}
+ for(const n of ns){const active=n.id===e.node,dim=(e.type==='break'&&['condition','body','advance'].includes(n.id))||(e.type==='continue'&&n.id==='body');const g=svg('g',{class:'cycle-node'+(active?' active':'')+(dim?' dim':'')+(n.id==='jump'&&config.mode==='break'||n.id==='jump'&&config.mode==='read'?' jump-stop':n.id==='jump'||n.id==='skip'?' jump-continue':''),'data-node':n.id});
+  const dw=config.mode==='validate'&&n.id==='condition'?105:75,dh=config.mode==='validate'&&n.id==='condition'?40:30;
+  g.append(n.kind==='diamond'?svg('polygon',{points:`${n.x},${n.y-dh} ${n.x+dw},${n.y} ${n.x},${n.y+dh} ${n.x-dw},${n.y}`}):svg('rect',{x:n.x-(n.id==='exit'||n.id==='body'||n.id==='read'?85:70),y:n.y-21,width:n.id==='exit'||n.id==='body'||n.id==='read'?170:140,height:42,rx:7}));
+  g.append(svg('text',{x:n.x,y:n.y+(n.note?-2:6),'text-anchor':'middle'},n.title));if(n.note)g.append(svg('text',{x:n.x,y:n.y+15,'text-anchor':'middle',class:'cycle-node-note'},n.note));root.append(g);
+ }
+ if(route){const dot=svg('circle',{r:6,class:'cycle-dot '+color,'aria-hidden':'true'});root.append(dot);const length=route.getTotalLength(),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,start=performance.now(),duration=Math.min(650,Number($('t10Speed').value)*.8);const tick=now=>{const progress=animate&&!reduced?Math.min(1,(now-start)/duration):1,point=route.getPointAtLength(length*progress);dot.setAttribute('cx',point.x);dot.setAttribute('cy',point.y);if(progress<1)motion=requestAnimationFrame(tick);else motion=null;};motion=requestAnimationFrame(tick);}
+ $('t10Flow').replaceChildren(root);
+}
+function render(animate=true){
+ $('t10Error').textContent=invalid?T('Se folosesc n între 0 și 8, valoarea specială între 1 și 9 și cel mult 12 întregi între −1000 și 1000.','Допустимы n от 0 до 8, особое значение от 1 до 9 и не более 12 целых чисел от −1000 до 1000.'):'';
+ if(!trace)return;const e=trace.events[at],last=at===trace.events.length-1;
+ $('t10Goal').textContent=goal();$('t10Status').textContent=describe(e);$('t10Status').classList.toggle('warning',e.type==='paused');
+ $('t10Progress').textContent=T(`Pas ${at+1} / ${trace.events.length}`,`Шаг ${at+1} / ${trace.events.length}`);
+ $('t10Back').disabled=at===0;$('t10Next').disabled=!!invalid||last;$('t10Play').disabled=!!invalid||last;
+ const skipped=(e.type==='continue'||e.type==='break')?[trace.map.body,...(config.loop==='while'?[trace.map.advance]:[])]:[];
+ $('t10Code').replaceChildren(...trace.lines.map((v,i)=>{const row=text('span',undefined,'code-line'+(e.line===i?' current':'')+(skipped.includes(i)?' skipped':'')+(e.node==='jump'&&i===e.line&&config.mode!=='continue'?' jump-stop':'')+((e.type==='continue')&&i===e.line?' jump-continue':''));row.append(text('span',String(i+1),'line-no'),text('span',v,'line-text'));return row;}));
+ const vars=[];if(e.i!==null)vars.push(['i',e.i]);if(e.x!==null)vars.push([config.mode==='validate'?'elevi':'x',e.x]);if(config.mode==='read')vars.push(['suma',e.sum]);if(e.condition)vars.push([e.condition.text,String(e.condition.value)]);
+ $('t10Vars').replaceChildren(...vars.map(([k,v])=>text('span',`${k} = ${v}`)));
+ $('t10Output').replaceChildren(...(e.output.length?e.output.map((v,i)=>text('span',v,i===e.output.length-1&&(e.type==='print'||e.type==='done')?'new':'')):[text('span',T('Nimic afișat încă','Вывода пока нет'),'empty')]));
+ $('t10Route').className='cycle-route'+(e.type==='break'?' stop':e.type==='continue'?' skip':'');
+ const nextName={condition:T('verificarea condiției','проверка условия'),body:T(config.mode==='read'?'adunarea':'afișarea',config.mode==='read'?'сложение':'вывод'),advance:'i++',early:'i++',jump:config.mode==='break'||config.mode==='read'?'break':'continue',skip:'continue',read:'cin',zero:'x == 0',negative:'x < 0',check:`i == ${config.special}`,exit:'cout'};
+ $('t10Route').textContent=e.type==='break'?config.mode==='read'?T('Următoarele citiri sunt sărite. Se trece la afișarea sumei.','Следующие вводы пропущены. Переход к выводу суммы.'):T('Sunt sărite: afișarea din corp, i++ și următoarea verificare.','Пропущены: вывод в теле, i++ и следующая проверка.'):e.type==='continue'?config.mode==='read'?T('Suma rămâne neschimbată. Urmează o nouă citire.','Сумма не меняется. Далее новый ввод.'):config.loop==='for'?T('Traseu: continue → i++ → condiție','Путь: continue → i++ → условие'):T('Traseu: continue → condiție. i++ nu este automat.','Путь: continue → условие. i++ не выполняется автоматически.'):e.type==='paused'?T('Se poate reveni la pasul anterior sau corecta exemplul.','Можно вернуться к предыдущему шагу или исправить пример.'):e.next?T('Urmează: ','Далее: ')+(nextName[e.next]||e.next):'';
+ $('t10Route').hidden=!$('t10Route').textContent;
+ const counter=['break','continue','compare'].includes(config.mode),values=counter?Array.from({length:Math.max(config.n,config.loop==='do'?1:0)},(_,i)=>i+1):config.values;
+ $('t10TrailTitle').textContent=counter?T('Ce s-a întâmplat la fiecare valoare a lui i','Что произошло при каждом значении i'):T('Citiri succesive de la tastatură','Последовательные вводы с клавиатуры');
+ const names={printed:T('afișat','выведено'),continue:T('sărit','пропущено'),break:T('oprit','остановка'),added:T('adunat','добавлено'),invalid:T('invalid','недопустимо'),valid:T('valid','допустимо')};
+ $('t10Trail').replaceChildren(...values.map((v,i)=>{const key=counter?v:i+1,mark=e.marks[key],focus=counter?e.i===key:e.read===key;const z=text('div',undefined,'cycle-ticket '+(mark||'waiting')+(focus?' focus':''));z.append(text('strong',String(v)),text('span',names[mark]||T(counter?'neexecutat':'necitit',counter?'не выполнено':'не считано')));return z;}));
+ if(values.length===0)$('t10Trail').append(text('span',T('n = 0 · nu este planificată nicio repetare','n = 0 · повторения не запланированы'),'cycle-input-caption'));
+ $('t10Explain').textContent=config.mode==='break'?T('break încheie ciclul care îl conține. Instrucțiunile de după acel ciclu se execută în continuare.','break завершает охватывающий его цикл. Команды после этого цикла выполняются дальше.'):config.mode==='continue'?config.loop==='for'?T('În for, continue trece la expresia de avansare din antet, apoi se verifică din nou condiția.','В for continue переходит к выражению обновления в заголовке, затем условие проверяется снова.'):T('În while, continue revine direct la condiție. i++ din ramură evită repetarea aceleiași valori. Cel de la sfârșitul corpului este sărit.','В while continue возвращается прямо к условию. i++ в ветви предотвращает повтор того же значения. i++ в конце тела пропускается.'):config.mode==='read'?T('while este potrivit când nu se cunoaște numărul citirilor. Fiecare cin înlocuiește valoarea lui x. După continue se citește din nou, iar după break se afișează suma.','while подходит, когда число вводов неизвестно. Каждый cin заменяет значение x. После continue выполняется новый ввод, после break выводится сумма.'):config.mode==='compare'?T('for și while verifică înaintea corpului. do-while verifică la sfârșit, deci execută corpul cel puțin o dată.','for и while проверяют условие перед телом. do-while проверяет его в конце, поэтому выполняет тело хотя бы один раз.'):T('do-while efectuează prima citire înainte de test. Condiția descrie când trebuie repetată citirea: valoarea este în afara intervalului 1–30.','do-while выполняет первый ввод до проверки. Условие указывает, когда ввод нужно повторить: значение вне диапазона 1–30.');
+ graph(e,animate);
+}
+function step(){if(!invalid&&at<trace.events.length-1){at++;render();}}
+function play(){if(timer!==null){stop();return;}if(invalid||at===trace.events.length-1)return;const tick=()=>{if($('theme10').hidden||at===trace.events.length-1){stop();return;}step();if(at===trace.events.length-1){stop();return;}timer=setTimeout(tick,Number($('t10Speed').value));};timer=setTimeout(tick,Number($('t10Speed').value));$('t10Play').textContent=T('❚❚ Pauză','❚❚ Пауза');$('t10Play').setAttribute('aria-pressed','true');}
+function language(value){stop();lang=value;labels();render(false);}
+window.theme10={setLanguage:language};
+$('t10Example').addEventListener('change',()=>{const m=$('t10Example').value;$('t10N').value=m==='compare'?'0':'5';$('t10Special').value='3';$('t10Bug').checked=false;if(m==='read')$('t10Values').value='12 -3 8 0 15';if(m==='validate')$('t10Values').value='0 35 24';prepare();});
+['t10Loop','t10N','t10Special','t10Bug','t10Values'].forEach(id=>$(id).addEventListener('change',prepare));
+$('t10Next').addEventListener('click',()=>{stop();step();});$('t10Back').addEventListener('click',()=>{stop();if(at>0){at--;render(false);}});$('t10Restart').addEventListener('click',()=>{stop();at=0;render(false);});$('t10Play').addEventListener('click',play);$('t10Speed').addEventListener('change',()=>{if(timer!==null){stop();play();}});
+prepare();
+})();
+
+</script>
+<section id="theme11" class="extra-lesson" hidden aria-labelledby="m11Title"><h2 class="lesson-title" id="m11Title"></h2>
+<div class="extra-settings"><div class="example"><label id="m11ModeLabel" for="m11Mode"></label><select id="m11Mode"><option value="rectangle"></option><option value="triangle"></option><option value="input"></option></select></div><div id="m11RuleGroup"><label id="m11RuleLabel" for="m11Rule"></label><select id="m11Rule"><option value="all"></option><option value="selection"></option><option value="continue"></option><option value="break"></option></select></div><div id="m11RowsGroup"><label for="m11Rows" id="m11RowsLabel"></label><input id="m11Rows" type="number" min="0" max="6" step="1" value="2"></div><div id="m11ColsGroup"><label for="m11Cols" id="m11ColsLabel"></label><input id="m11Cols" type="number" min="0" max="6" step="1" value="3"></div></div>
+<div id="m11Inputs" class="extra-inputs" hidden><div><label id="m11InputLabel1" for="m11Input1"></label><input id="m11Input1" value="4 7 0" spellcheck="false"></div><div><label id="m11InputLabel2" for="m11Input2"></label><input id="m11Input2" value="0" spellcheck="false"></div><div><label id="m11InputLabel3" for="m11Input3"></label><input id="m11Input3" value="6 2 5 0" spellcheck="false"></div></div><p id="m11Goal" class="cycle-goal"></p><p id="m11Error" class="error" role="alert"></p><div class="cycle-controls"><button id="m11Back"></button><button id="m11Next" class="primary"></button><button id="m11Play"></button><button id="m11Restart"></button><span id="m11Progress" class="cycle-progress"></span><label class="cycle-speed"><span id="m11SpeedLabel"></span><select id="m11Speed"><option value="1500"></option><option value="900" selected></option><option value="450"></option></select></label></div>
+<div class="cycle-workspace"><section class="cycle-visual"><h3 id="m11FlowTitle"></h3><div id="m11Flow" class="cycle-flow"></div><p id="m11Status" class="cycle-status" aria-live="polite"></p><div id="m11Route" class="cycle-route"></div><div id="m11Grid" class="nested-grid"></div></section>
+<section class="cycle-program"><h3 id="m11CodeTitle"></h3><pre id="m11Code" class="code" aria-label="C++"></pre><div id="m11Vars" class="extra-vars"></div><h3 id="m11OutputTitle"></h3><pre id="m11Output" class="extra-terminal" aria-live="polite"></pre></section></div><details class="cycle-details"><summary id="m11ExplainTitle"></summary><p id="m11Explain"></p></details></section><section id="theme12" class="extra-lesson" hidden aria-labelledby="m12Title"><h2 class="lesson-title" id="m12Title"></h2>
+<div class="extra-settings"><div class="example"><label for="m12Mode" id="m12ModeLabel"></label><select id="m12Mode"><option value="scan"></option><option value="delete"></option></select></div><div><label for="m12Preset" id="m12PresetLabel"></label><select id="m12Preset"><option value="mixed"></option><option value="negative"></option><option value="equal"></option><option value="single"></option><option value="empty"></option></select></div><div id="m12ThresholdGroup"><label for="m12Threshold" id="m12ThresholdLabel"></label><input id="m12Threshold" type="number" value="7" step="any"></div><div id="m12IndexGroup" hidden><label for="m12Index" id="m12IndexLabel"></label><input id="m12Index" type="number" min="0" max="7" step="1" value="1"></div><div class="wide"><label id="m12ValuesLabel" for="m12Values"></label><input id="m12Values" value="6 9 7 9 5" autocomplete="off" spellcheck="false"></div></div>
+<p id="m12Goal" class="cycle-goal"></p><p id="m12Error" class="error" role="alert"></p><div class="cycle-controls"><button id="m12Back"></button><button id="m12Next" class="primary"></button><button id="m12Play"></button><button id="m12Restart"></button><span id="m12Progress" class="cycle-progress"></span><label class="cycle-speed"><span id="m12SpeedLabel"></span><select id="m12Speed"><option value="1500"></option><option value="900" selected></option><option value="450"></option></select></label></div>
+<div class="cycle-workspace"><section class="cycle-visual"><h3 id="m12ArrayTitle"></h3><div id="m12Board" class="array-board"><div id="m12Cells" class="array-cells"></div></div><div id="m12Vars" class="extra-vars"></div><p id="m12Status" class="cycle-status" aria-live="polite"></p><dl id="m12Summary" class="array-summary"></dl><div id="m12Flow" class="cycle-flow array-flow"></div><div id="m12Route" class="cycle-route"></div></section>
+<section class="cycle-program"><h3 id="m12CodeTitle"></h3><pre id="m12Code" class="code" aria-label="C++"></pre><h3 id="m12ResultTitle"></h3><pre id="m12Result" class="extra-terminal"></pre></section></div><details class="cycle-details"><summary id="m12ExplainTitle"></summary><p id="m12Explain"></p></details></section>
+<script>
+(function(root){
+'use strict';
+function nested(c){
+ c={rule:'all',...c};
+ const lines=[],map={},events=[],s={i:1,j:null,x:null,subtotal:0,total:0,printed:0,marks:{},output:[],read:0,condition:null};
+ const L=(key,v)=>{map[key]=lines.length;lines.push(v);};
+ const E=(type,node,next,extra={})=>events.push(JSON.parse(JSON.stringify({...s,type,node,next,line:map[node],...extra})));
+ const Q=(node,expr,value,yes,no)=>{s.condition={expr,value};E('test',node,value?yes:no);return value;};
+ const input=c.mode==='input',rows=input?3:c.rows;
+ if(input){
+  L('start','int x, total = 0;');L('outerInit','for (int i = 1; i <= 3; i++) {');map.outerTest=map.outerInit;map.outerAdvance=map.outerInit;
+  L('innerInit','    int subtotal = 0;');L('read','    cin >> x;');L('innerTest','    while (x != 0) {');L('body','        subtotal += x;');L('innerAdvance','        cin >> x;');L('innerClose','    }');L('accumulate','    total += subtotal;');L('rowEnd',"    cout << subtotal << '\\n';");L('outerClose','}');L('exit','cout << total;');
+ }else{
+  L('outerInit',`for (int i = 1; i <= ${rows}; i++) {`);map.outerTest=map.outerInit;map.outerAdvance=map.outerInit;
+  L('innerInit',`    for (int j = 1; j <= ${c.mode==='triangle'?'i':c.cols}; j++) {`);map.innerTest=map.innerInit;map.innerAdvance=map.innerInit;
+  if(c.rule==='selection')L('decision','        if ((i + j) % 2 == 0)');
+  if(c.rule==='continue'||c.rule==='break'){L('decision',`        if (j == ${c.rule==='continue'?2:3})`);L('jump',`            ${c.rule};`);}
+  L('body',c.mode==='triangle'?"        cout << '*';":`        cout << '(' << i << ',' << j << ") ";`);
+  L('innerClose','    }');L('rowEnd',"    cout << '\\n';");L('outerClose','}');L('exit','cout << "Gata";');
+ }
+ E('outerInit','outerInit','outerTest');
+ while(Q('outerTest',`${s.i} <= ${rows}`,s.i<=rows,'innerInit','exit')){
+  s.j=1;s.read=0;s.subtotal=0;E('innerInit','innerInit',input?'read':'innerTest');
+  if(input){
+   const vals=c.lists[s.i-1];let pos=0;
+   function read(key){if(pos===vals.length){E('paused',key,null,{reason:'input'});return false;}s.x=vals[pos++];s.read=pos;s.j=pos;E('read',key,'innerTest');return true;}
+   if(!read('read'))return {lines,map,events};
+   while(Q('innerTest',`${s.x} != 0`,s.x!==0,'body','accumulate')){
+    s.subtotal+=s.x;s.marks[`${s.i},${s.j}`]='printed';E('sum','body','innerAdvance');
+    if(!read('innerAdvance'))return {lines,map,events};
+   }
+   s.marks[`${s.i},${s.j}`]='break';s.total+=s.subtotal;E('accumulate','accumulate','rowEnd');s.output.push(String(s.subtotal));
+  }else{
+   const limit=c.mode==='triangle'?s.i:c.cols;
+   while(Q('innerTest',`${s.j} <= ${limit}`,s.j<=limit,c.rule==='all'?'body':'decision','rowEnd')){
+    const key=`${s.i},${s.j}`;
+    if(c.rule!=='all'){
+     const match=c.rule==='selection'?(s.i+s.j)%2===0:s.j===(c.rule==='continue'?2:3);
+     const yes=c.rule==='selection'?'body':'jump',no=c.rule==='selection'?'innerAdvance':'body';
+     Q('decision',c.rule==='selection'?`(${s.i} + ${s.j}) % 2 == 0`:`${s.j} == ${c.rule==='continue'?2:3}`,match,yes,no);
+     if(c.rule==='selection'&&!match){s.marks[key]='continue';E('filtered','decision','innerAdvance');s.j++;E('innerAdvance','innerAdvance','innerTest');continue;}
+     if(c.rule==='continue'&&match){s.marks[key]='continue';E('continue','jump','innerAdvance');s.j++;E('innerAdvance','innerAdvance','innerTest');continue;}
+     if(c.rule==='break'&&match){s.marks[key]='break';E('break','jump','rowEnd');break;}
+    }
+    s.marks[key]='printed';s.printed++;while(s.output.length<s.i)s.output.push('');s.output[s.i-1]+=c.mode==='triangle'?'*':`(${s.i},${s.j}) `;E('print','body','innerAdvance');s.j++;E('innerAdvance','innerAdvance','innerTest');
+   }
+   while(s.output.length<s.i)s.output.push('');
+  }
+  E('rowEnd','rowEnd','outerAdvance');s.i++;E('outerAdvance','outerAdvance','outerTest');
+ }
+ s.output.push(input?String(s.total):'Gata');E('done','exit',null);return {lines,map,events};
+}
+function array(c){
+ const lines=[],map={},events=[],s={arr:[...c.arr,...Array(8-c.arr.length).fill(0)],n:c.arr.length,i:null,k:c.k??0,src:null,dest:null,sum:0,min:null,max:null,maxIndex:null,count:0,mean:null,copies:0,condition:null};
+ const L=(key,v)=>{map[key]=lines.length;lines.push(v);};
+ const E=(type,node,next,extra={})=>events.push(JSON.parse(JSON.stringify({...s,type,node,next,line:map[node],...extra})));
+ const Q=(node,expr,value,yes,no)=>{s.condition={expr,value};E('test',node,value?yes:no);return value;};
+ L('data',`double a[8] = {${c.arr.join(', ')}};`);L('length',`int n = ${c.arr.length};`);
+ if(c.mode==='delete'){
+  if(s.n===0||s.k<0||s.k>=s.n)throw Error('Invalid deletion index');
+  L('init',`int k = ${s.k};`);L('loopInit','for (int i = k; i < n - 1; i++) {');map.test=map.loopInit;map.advance=map.loopInit;
+  L('copy','    a[i] = a[i + 1];');L('close','}');L('shorten','n--;');
+  s.i=s.k;E('init','init','test');
+  while(Q('test',`${s.i} < ${s.n-1}`,s.i<s.n-1,'copy','shorten')){
+   const before=[...s.arr];s.dest=s.i;s.src=s.i+1;s.arr[s.dest]=s.arr[s.src];s.copies++;E('copy','copy','advance',{before,value:s.arr[s.dest]});s.i++;E('advance','advance','test');
+  }
+  s.n--;s.src=null;s.dest=null;E('shorten','shorten',null);return {lines,map,events};
+ }
+ L('init','double suma = 0;');L('count','int contor = 0, pozMax = 0;');L('guard','if (n > 0) {');L('extremeInit','    double minim = a[0], maxim = a[0];');L('loopInit','    for (int i = 0; i < n; i++) {');map.test=map.loopInit;map.advance=map.loopInit;
+ L('sum','        suma += a[i];');L('minTest','        if (a[i] < minim) minim = a[i];');map.minSet=map.minTest;
+ L('maxTest','        if (a[i] > maxim) { maxim = a[i]; pozMax = i; }');map.maxSet=map.maxTest;
+ L('threshold',`        if (a[i] > ${c.threshold}) contor++;`);map.countSet=map.threshold;
+ L('close','    }');L('mean','    cout << suma / n;');L('end','}');map.done=map.end;
+ E('init','init','guard');
+ map.empty=map.guard;
+ if(!Q('guard',`${s.n} > 0`,s.n>0,'extremeInit','empty')){E('empty','empty',null);return {lines,map,events};}
+ s.min=s.max=s.arr[0];s.maxIndex=0;E('extremeInit','extremeInit','loopInit');s.i=0;E('loopInit','loopInit','test');
+ while(Q('test',`${s.i} < ${s.n}`,s.i<s.n,'sum','mean')){
+  s.sum+=s.arr[s.i];E('sum','sum','minTest');
+  if(Q('minTest',`${s.arr[s.i]} < ${s.min}`,s.arr[s.i]<s.min,'minSet','maxTest')){s.min=s.arr[s.i];E('minSet','minSet','maxTest');}
+  if(Q('maxTest',`${s.arr[s.i]} > ${s.max}`,s.arr[s.i]>s.max,'maxSet','threshold')){s.max=s.arr[s.i];s.maxIndex=s.i;E('maxSet','maxSet','threshold');}
+  if(Q('threshold',`${s.arr[s.i]} > ${c.threshold}`,s.arr[s.i]>c.threshold,'countSet','advance')){s.count++;E('countSet','countSet','advance');}
+  s.i++;E('advance','advance','test');
+ }
+ s.mean=s.sum/s.n;E('mean','mean',null);return {lines,map,events};
+}
+root.ExtraLessons={nested,array};if(typeof module!=='undefined')module.exports={nested,array};
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+const el=(tag,value,cls)=>{const e=document.createElement(tag);if(value!==undefined)e.textContent=value;if(cls)e.className=cls;return e;};
+const sv=(tag,attrs={},value)=>{const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(value!==undefined)e.textContent=value;return e;};
+function lesson(prefix,kind){
+ const q=s=>$(prefix+s),T=(ro,ru)=>lang==='ro'?ro:ru;
+ let lang='ro',cfg,trace,at=0,timer=null,frame=null,copyFrame=null,error='';
+ const F=n=>n===null||n===undefined?'—':new Intl.NumberFormat(lang==='ro'?'ro-RO':'ru-RU',{maximumFractionDigits:4}).format(n);
+ const values=s=>{const a=s.trim()?s.trim().split(/[\s,;]+/):[];return a.map(Number);};
+ function stop(){if(timer!==null)clearTimeout(timer);timer=null;q('Play').textContent=T('▶ Redare','▶ Воспроизвести');q('Play').setAttribute('aria-pressed','false');}
+ function labels(){
+  const common={Back:T('← Înapoi','← Назад'),Next:T('Pasul următor →','Следующий шаг →'),Restart:T('↺ De la început','↺ Сначала'),SpeedLabel:T('Viteză','Скорость'),FlowTitle:T('Traseul execuției','Ход выполнения'),CodeTitle:T('Codul executat','Выполняемый код'),OutputTitle:T('Pe ecran','На экране'),ExplainTitle:T('Regula ilustrată','Показанное правило')};
+  for(const[k,v]of Object.entries(common))if(q(k))q(k).textContent=v;
+  [T('Lent','Медленно'),T('Normal','Обычная'),T('Rapid','Быстро')].forEach((v,i)=>q('Speed').options[i].textContent=v);
+  if(timer===null)q('Play').textContent=T('▶ Redare','▶ Воспроизвести');
+  if(kind==='nested'){
+   const copy={Title:T('Tema 11 · Cicluri imbricate','Тема 11 · Вложенные циклы'),ModeLabel:T('Exemplu','Пример'),RuleLabel:T('În ciclul interior','Во внутреннем цикле'),RowsLabel:T('Rânduri','Ряды'),ColsLabel:T('Locuri','Места')};for(const[k,v]of Object.entries(copy))q(k).textContent=v;
+   [T('Rânduri și locuri','Ряды и места'),T('Triunghi · j depinde de i','Треугольник · j зависит от i'),T('Ateliere · for cu while și citiri cin','Мастерские · for с while и вводом cin')].forEach((v,i)=>q('Mode').options[i].textContent=v);
+   [T('Se afișează toate perechile','Вывести все пары'),T('Se afișează doar i + j par','Вывести только чётную сумму i + j'),T('continue la j = 2','continue при j = 2'),T('break la j = 3','break при j = 3')].forEach((v,i)=>q('Rule').options[i].textContent=v);
+   for(let i=1;i<=3;i++)q('InputLabel'+i).textContent=T('Atelier '+i+' · citiri cin','Мастерская '+i+' · ввод cin');
+  }else{
+   const copy={Title:T('Tema 12 · Tablouri unidimensionale','Тема 12 · Одномерные массивы'),ModeLabel:T('Operație','Операция'),PresetLabel:T('Date de exemplu','Пример данных'),ThresholdLabel:T('Prag','Порог'),IndexLabel:T('Indice k','Индекс k'),ValuesLabel:T('Elementele active · maximum 8 numere, zecimale cu punct','Активные элементы · не более 8 чисел, дробная часть через точку'),ArrayTitle:T('Celulele și indicii lor','Ячейки и их индексы'),ResultTitle:T('Rezultat','Результат')};for(const[k,v]of Object.entries(copy))q(k).textContent=v;
+   [T('Parcurgere și calcule','Обход и вычисления'),T('Ștergere prin deplasare','Удаление сдвигом')].forEach((v,i)=>q('Mode').options[i].textContent=v);
+   [T('Valori mixte','Разные значения'),T('Numere negative','Отрицательные числа'),T('Maxime egale','Одинаковые максимумы'),T('Un singur element','Один элемент'),T('Tablou vid','Пустой массив')].forEach((v,i)=>q('Preset').options[i].textContent=v);
+  }
+ }
+ function prepare(){
+  stop();error='';
+  if(kind==='nested'){
+   const mode=q('Mode').value,rows=Number(q('Rows').value),cols=Number(q('Cols').value),lists=[1,2,3].map(i=>values(q('Input'+i).value));
+   q('Inputs').hidden=mode!=='input';q('RowsGroup').hidden=mode==='input';q('ColsGroup').hidden=mode!=='rectangle';q('RuleGroup').hidden=mode==='input';
+   if(mode!=='input'&&(!/^\d+$/.test(q('Rows').value)||rows>6||rows<0||(mode==='rectangle'&&(!/^\d+$/.test(q('Cols').value)||cols>6||cols<0))))error='limits';
+   if(mode==='input'&&lists.some(a=>a.length>8||a.some(v=>!Number.isInteger(v)||v<0||v>100000)))error='input';
+   if(!error){cfg={mode,rows,cols,rule:q('Rule').value,lists};trace=window.ExtraLessons.nested(cfg);at=0;}
+  }else{
+   const mode=q('Mode').value,arr=values(q('Values').value),threshold=Number(q('Threshold').value),k=Number(q('Index').value);
+   q('ThresholdGroup').hidden=mode==='delete';q('IndexGroup').hidden=mode!=='delete';
+   if(arr.length>8||arr.some(v=>!Number.isFinite(v)||Math.abs(v)>1e6)||!q('Threshold').value.trim()||!Number.isFinite(threshold)||Math.abs(threshold)>1e6)error='array';
+   if(mode==='delete'&&(!/^\d+$/.test(q('Index').value)||!Number.isInteger(k)||k<0||k>=arr.length))error=arr.length?'index':'empty';
+   if(!error){cfg={mode,arr,threshold,k};trace=window.ExtraLessons.array(cfg);at=0;}
+  }
+  labels();render(false);
+ }
+ function description(e){
+  if(kind==='nested'){
+   const input=cfg.mode==='input';
+   if(e.type==='test')return `${e.condition.expr} → ${e.condition.value}. `+(e.node==='outerTest'?(e.condition.value?T('Se începe un nou rând.','Начинается новый ряд.'):T('Ciclul exterior s-a încheiat.','Внешний цикл завершён.')):e.node==='innerTest'?(e.condition.value?T('Corpul ciclului interior se execută.','Выполняется тело внутреннего цикла.'):T('Se iese doar din ciclul interior.','Выход только из внутреннего цикла.')):e.condition.value?T('Condiția din corp este adevărată.','Условие в теле истинно.'):T('Condiția din corp este falsă.','Условие в теле ложно.'));
+   if(e.type==='outerInit')return T('i = 1. Se verifică mai întâi ciclul exterior.','i = 1. Сначала проверяется внешний цикл.');
+   if(e.type==='innerInit')return input?T(`Atelierul ${e.i}: subtotal revine la 0. Urmează prima citire.`,`Мастерская ${e.i}: subtotal снова равен 0. Далее первый ввод.`):T(`Rândul ${e.i}: j revine la 1. Ciclul interior începe din nou.`,`Ряд ${e.i}: j снова равен 1. Внутренний цикл начинается заново.`);
+   if(e.type==='print')return T(`Se afișează ${cfg.mode==='triangle'?'o stea':`(${e.i},${e.j})`}. Urmează j++.`,`Выводится ${cfg.mode==='triangle'?'звёздочка':`(${e.i},${e.j})`}. Далее j++.`);
+   if(e.type==='innerAdvance')return T(`j++: j = ${e.j}. i rămâne ${e.i}.`,`j++: j = ${e.j}. i остаётся ${e.i}.`);
+   if(e.type==='outerAdvance')return T(`i++: i = ${e.i}. La următoarea intrare, ciclul interior se inițializează din nou.`,`i++: i = ${e.i}. При следующем входе внутренний цикл инициализируется заново.`);
+   if(e.type==='continue')return T('continue sare afișarea acestei perechi. Urmează j++, în ciclul interior.','continue пропускает вывод этой пары. Далее j++ во внутреннем цикле.');
+   if(e.type==='filtered')return T('Perechea nu trece filtrul. Nu se afișează nimic, apoi crește j.','Пара не проходит отбор. Ничего не выводится, затем j увеличивается.');
+   if(e.type==='break')return T('break oprește doar ciclul interior. Urmează sfârșitul rândului, apoi crește i.','break завершает только внутренний цикл. Далее конец ряда, затем увеличивается i.');
+   if(e.type==='rowEnd')return input?T(`Se afișează subtotalul atelierului ${e.i}: ${e.subtotal}.`,`Выводится сумма мастерской ${e.i}: ${e.subtotal}.`):T('Se afișează un rând nou. Apoi avansează ciclul exterior.','Выводится новая строка. Затем продолжается внешний цикл.');
+   if(e.type==='read')return T(`Atelierul ${e.i}: cin citește x = ${e.x}. Urmează testul x != 0.`,`Мастерская ${e.i}: cin считывает x = ${e.x}. Далее проверка x != 0.`);
+   if(e.type==='sum')return T(`Se adună ${e.x}: subtotal = ${e.subtotal}. Urmează alt cin, în același atelier.`,`Добавляется ${e.x}: subtotal = ${e.subtotal}. Далее новый cin в той же мастерской.`);
+   if(e.type==='accumulate')return T(`Subtotalul ${e.subtotal} intră în total. total = ${e.total}.`,`Промежуточная сумма ${e.subtotal} добавлена к общей. total = ${e.total}.`);
+   if(e.type==='paused')return T('Se așteaptă încă o valoare la cin. Se poate completa câmpul atelierului.','Ожидается ещё одно значение cin. Можно дополнить поле мастерской.');
+   return input?T(`Cele trei ateliere s-au încheiat. Se afișează totalul ${e.total}.`,`Три мастерские завершены. Выводится общая сумма ${e.total}.`):T('Ciclul exterior s-a încheiat. Se afișează Gata.','Внешний цикл завершён. Выводится Gata.');
+  }
+  if(e.type==='test')return `${e.condition.expr} → ${e.condition.value}. `+(e.node==='test'?e.condition.value?T('Mai există un element de prelucrat.','Остался элемент для обработки.'):cfg.mode==='delete'?T('Nu mai este necesară nicio copie. Urmează n--.','Копирование больше не нужно. Далее n--.'):T('Toate elementele active au fost prelucrate.','Все активные элементы обработаны.'):e.node==='guard'?e.condition.value?T('Există cel puțin un element. Se inițializează extremele.','Есть хотя бы один элемент. Инициализируются экстремумы.'):T('n = 0. Nu se accesează a[0].','n = 0. Обращения к a[0] нет.'):e.condition.value?T('Se actualizează variabila indicată în cod.','Обновляется указанная в коде переменная.'):T('Variabila rămâne neschimbată.','Переменная не меняется.'));
+  const msg={init:T(cfg.mode==='delete'?`k = ${e.k}. Prima destinație va fi a[k].`:'Suma și contorul pornesc de la 0.',cfg.mode==='delete'?`k = ${e.k}. Первое назначение — a[k].`:'Сумма и счётчик начинаются с 0.'),extremeInit:T(`Minimul și maximul pornesc de la a[0] = ${F(e.min)}.`,`Минимум и максимум получают a[0] = ${F(e.min)}.`),loopInit:T('i = 0. Se începe cu primul element activ.','i = 0. Обход начинается с первого активного элемента.'),sum:T(`Se adună a[${e.i}] = ${F(e.arr[e.i])}. suma = ${F(e.sum)}.`,`Добавляется a[${e.i}] = ${F(e.arr[e.i])}. suma = ${F(e.sum)}.`),minSet:T(`Noul minim este ${F(e.min)}.`,`Новый минимум: ${F(e.min)}.`),maxSet:T(`Noul maxim este ${F(e.max)}, la indicele ${e.maxIndex}.`,`Новый максимум: ${F(e.max)}, индекс ${e.maxIndex}.`),countSet:T(`Valoarea depășește pragul. contor = ${e.count}.`,`Значение превышает порог. contor = ${e.count}.`),advance:T(`i++: i = ${e.i}. Se verifică din nou limita.`,`i++: i = ${e.i}. Граница проверяется снова.`),copy:T(`a[${e.dest}] = a[${e.src}]: valoarea ${F(e.value)} se copiază o poziție la stânga.`,`a[${e.dest}] = a[${e.src}]: значение ${F(e.value)} копируется на одну позицию влево.`),shorten:T(`n--: n = ${e.n}. Ultima celulă devine inactivă; memoria are tot 8 celule.`,`n--: n = ${e.n}. Последняя ячейка неактивна; в памяти по-прежнему 8 ячеек.`),mean:T(`Media se calculează o singură dată: ${F(e.sum)} / ${e.n} = ${F(e.mean)}.`,`Среднее вычисляется один раз: ${F(e.sum)} / ${e.n} = ${F(e.mean)}.`),empty:T('Tabloul este vid. Nu există medie, minim sau maxim.','Массив пуст. Среднее, минимум и максимум не определены.')};
+  return msg[e.type]||'';
+ }
+ function draw(e,animate){
+  const nodes=[],edges=[],N=(id,x,y,v,diamond=false,note='')=>nodes.push({id,x,y,v,diamond,note}),E=(a,b,d,label='',x=0,y=0)=>edges.push({a,b,d,label,x,y});
+  let key=e.node,next=e.next,height=435;
+  if(kind==='nested'){
+   const input=cfg.mode==='input';
+   N('outerInit',150,30,'i = 1');N('outerTest',150,110,`i <= ${input?3:cfg.rows}?`,true);N('innerInit',400,30,input?'subtotal = 0':'j = 1');N('innerTest',400,110,input?'x != 0?':cfg.mode==='triangle'?'j <= i?':`j <= ${cfg.cols}?`,true);N('body',400,270,input?'subtotal += x':'cout');N('innerAdvance',575,270,input?'cin >> x':'j++');
+   N('rowEnd',150,input?325:245,input?'cout << subtotal':"cout << '\\n'");N('outerAdvance',150,input?405:325,'i++');N('exit',150,input?475:395,input?'cout << total':'cout << "Gata"');if(input){height=515;N('accumulate',150,245,'total += subtotal');}
+   E('outerInit','outerTest','M150 51V80');E('outerTest','innerInit','M225 110H250V30H315','true',258,75);E('innerInit','innerTest','M400 51V80');E('outerTest','exit',`M75 110H20V${input?475:395}H65`,'false',25,140);E('outerAdvance','outerTest',`M220 ${input?405:325}H260V110H225`);
+   E('innerTest',input?'accumulate':'rowEnd','M325 110H285V245H235','false',287,135);
+   E('rowEnd','outerAdvance',input?'M150 346V384':'M150 266V304');
+   if(input){N('read',575,70,'cin >> x');E('accumulate','rowEnd','M150 266V304');E('innerInit','read','M485 30H575V49');E('read','innerTest','M490 70H485V110H475');E('innerTest','body','M400 140V249','true',411,195);E('body','innerAdvance','M485 270H505');E('innerAdvance','innerTest','M575 249V110H475');}
+   else{
+    if(cfg.rule==='all')E('innerTest','body','M400 140V249','true',411,196);
+    else{
+     N('decision',400,190,cfg.rule==='selection'?'(i+j)%2==0?':`j == ${cfg.rule==='continue'?2:3}?`,true);E('innerTest','decision','M400 140V160','true',410,151);
+     if(cfg.rule==='selection'){E('decision','body','M400 220V249','true',412,238);E('decision','innerAdvance','M475 190H575V249','false',520,176);}
+     else{N('jump',575,190,cfg.rule);E('decision','jump','M475 190H505','true',480,175);E('decision','body','M400 220V249','false',412,238);E('jump',cfg.rule==='break'?'rowEnd':'innerAdvance',cfg.rule==='break'?'M505 190H485V220H260V245H235':'M575 211V249');}
+    }
+    E('body','innerAdvance','M485 270H505');E('innerAdvance','innerTest','M575 249V110H475');
+   }
+  }else if(cfg.mode==='delete'){
+   height=225;N('init',100,35,'i = k');N('test',300,35,'i < n-1?',true);N('copy',535,35,'a[i]=a[i+1]');N('advance',535,135,'i++');N('shorten',300,175,'n--');E('init','test','M170 35H225');E('test','copy','M375 35H450','true',402,22);E('copy','advance','M535 56V114');E('advance','test','M465 135H405V35H375');E('test','shorten','M300 65V154','false',310,115);
+  }else{
+   height=255;
+   const aliases={extremeInit:'initial',loopInit:'test',sum:'update',minTest:'update',minSet:'update',maxTest:'update',maxSet:'update',threshold:'update',countSet:'update',advance:'advance',mean:'mean',guard:'guard',init:'init'};
+   key=aliases[e.node]||e.node;next=aliases[e.next]||e.next;
+   N('init',85,30,'suma = 0');N('guard',260,30,'n > 0?',true);N('initial',510,30,'min/max = a[0]');N('test',510,125,'i < n?',true);N('update',270,125,e.node==='sum'?'suma += a[i]':e.node==='threshold'||e.node==='countSet'?'contor':e.node==='minTest'||e.node==='minSet'?'minim':e.node==='maxTest'||e.node==='maxSet'?'maxim':'a[i]');N('advance',85,125,'i++');N('mean',510,225,'suma / n');N('empty',260,225,'n = 0');E('init','guard','M155 30H185');E('guard','initial','M335 30H425','true',370,18);E('guard','empty','M260 60V204','false',270,194);E('initial','test','M510 51V95');E('test','update','M435 125H355','true',393,112);E('update','advance','M185 125H155');E('advance','test','M85 146V180H400V125H435');E('test','mean','M510 155V204','false',521,188);E('update','update','M270 104V75H370V125H355');
+  }
+  const root=sv('svg',{viewBox:`0 0 680 ${height}`,role:'img','aria-label':description(e)}),defs=sv('defs');
+  const stopColor=e.type==='break',skipColor=e.type==='continue'||e.type==='filtered',color=stopColor?'#bc3e39':skipColor?'#aa650b':'#147872',tone=stopColor?'stop':skipColor?'skip':'';
+  for(const[id,fill]of [['base','#b4bbb7'],['active',color]]){const m=sv('marker',{id:prefix+'-'+id,viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:7,markerHeight:7,orient:'auto'});m.append(sv('path',{d:'M0 0L10 5L0 10z',fill}));defs.append(m);}root.append(defs);let path;
+  for(const a of edges){const active=a.a===key&&a.b===next;const p=sv('path',{d:a.d,class:'cycle-edge'+(active?' active '+tone:''),'marker-end':`url(#${prefix}-${active?'active':'base'})`,'data-edge':a.a+'>'+a.b});root.append(p);if(active)path=p;if(a.label)root.append(sv('text',{x:a.x,y:a.y,class:'cycle-edge-label'},a.label));}
+  for(const n of nodes){const jump=n.id==='jump',active=n.id===key;const g=sv('g',{class:'cycle-node'+(active?' active':'')+(jump?(cfg.rule==='break'?' jump-stop':' jump-continue'):'')});g.append(n.diamond?sv('polygon',{points:`${n.x} ${n.y-30},${n.x+75} ${n.y},${n.x} ${n.y+30},${n.x-75} ${n.y}`}):sv('rect',{x:n.x-85,y:n.y-21,width:170,height:42,rx:7}));g.append(sv('text',{x:n.x,y:n.y+6,'text-anchor':'middle'},n.v));root.append(g);}
+  q('Flow').replaceChildren(root);
+  if(path){const dot=sv('circle',{r:6,class:'cycle-dot '+tone,'aria-hidden':'true'});root.append(dot);const len=path.getTotalLength(),start=performance.now(),reduce=matchMedia('(prefers-reduced-motion:reduce)').matches,duration=Math.min(650,Number(q('Speed').value)*.8);const move=now=>{const t=animate&&!reduce?Math.min(1,(now-start)/duration):1,p=path.getPointAtLength(len*t);dot.setAttribute('cx',p.x);dot.setAttribute('cy',p.y);if(t<1)frame=requestAnimationFrame(move);else frame=null;};frame=requestAnimationFrame(move);}
+ }
+ function nestedVisual(e){
+  q('Grid').replaceChildren();
+  if(cfg.mode==='input'){
+   cfg.lists.forEach((a,r)=>{const row=el('div',undefined,'nested-input-row'+(e.i===r+1?' active':''));row.append(el('b',T('Atelier ','Мастерская ')+(r+1)));a.forEach((v,j)=>{const mark=e.marks[`${r+1},${j+1}`],current=e.i===r+1&&e.read===j+1;row.append(el('div',String(v),'nested-cell '+(mark||'')+(current?' current':'')));});if(!a.length)row.append(el('span',T('Se așteaptă cin','Ожидается cin')));q('Grid').append(row);});return;
+  }
+  const cols=cfg.mode==='triangle'?cfg.rows:cfg.cols;
+  for(let i=1;i<=cfg.rows;i++){const row=el('div',undefined,'nested-row');row.append(el('span','i = '+i,'nested-row-label'));const cells=el('div',undefined,'nested-cells');cells.style.setProperty('--cols',Math.max(1,cols));for(let j=1;j<=cols;j++){const outside=cfg.mode==='triangle'&&j>i,mark=e.marks[`${i},${j}`],current=e.i===i&&e.j===j&&!['outerInit','outerTest','outerAdvance','exit'].includes(e.node);const cell=el('div',undefined,'nested-cell '+(mark||'')+(outside?' outside':'')+(current?' current':''));cell.append(el('span',cfg.mode==='triangle'?(mark==='printed'?'*':`j=${j}`):`(${i},${j})`));if(mark==='continue'||mark==='break')cell.append(el('small',mark==='break'?T('oprit','остановка'):T('sărit','пропущено')));cells.append(cell);}if(cols===0)cells.append(el('span',T('0 locuri','0 мест')));row.append(cells);q('Grid').append(row);}
+  if(cfg.rows===0)q('Grid').append(el('span',T('0 rânduri · ciclul exterior nu intră în corp','0 рядов · тело внешнего цикла не выполняется')));
+ }
+ function arrayVisual(e,animate){
+  const board=q('Board'),cells=q('Cells');board.querySelectorAll('.array-copy-svg,.array-ghost,.array-copy-label').forEach(x=>x.remove());
+  const moving=e.type==='copy'&&animate&&!matchMedia('(prefers-reduced-motion:reduce)').matches,a=moving?e.before:e.arr;
+  cells.replaceChildren(...a.map((v,i)=>{const inactive=i>=e.n,current=cfg.mode==='scan'&&i===e.i&&i<e.n;const cell=el('div',undefined,'array-cell'+(inactive?' inactive':'')+(current?' current':'')+(e.type==='copy'&&i===e.src?' src':'')+(e.type==='copy'&&i===e.dest?' dest':''));cell.setAttribute('aria-label',T(`Indice ${i}, valoare ${F(v)}, ${inactive?'inactiv':'activ'}`,`Индекс ${i}, значение ${F(v)}, ${inactive?'неактивно':'активно'}`));cell.append(el('div',`[${i}]`,'array-index'),el('div',F(v),'array-value'),el('div',inactive?T('inactiv','неактивно'):e.type==='copy'&&i===e.src?T('sursă','источник'):e.type==='copy'&&i===e.dest?T('destinație','назначение'):'','array-note'));return cell;}));
+  if(e.type==='copy'){
+   const b=board.getBoundingClientRect(),src=cells.children[e.src].querySelector('.array-value').getBoundingClientRect(),dest=cells.children[e.dest].querySelector('.array-value').getBoundingClientRect(),x1=src.x+src.width/2-b.x,x2=dest.x+dest.width/2-b.x;
+   const arrow=sv('svg',{viewBox:`0 0 ${b.width} 40`,class:'array-copy-svg','aria-hidden':'true'});const defs=sv('defs'),m=sv('marker',{id:prefix+'-copy',viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:6,markerHeight:6,orient:'auto'});m.append(sv('path',{d:'M0 0L10 5L0 10z',fill:'#aa650b'}));defs.append(m);arrow.append(defs,sv('path',{d:`M${x1} 34V21H${x2}V34`,fill:'none',stroke:'#aa650b','stroke-width':2.5,'marker-end':`url(#${prefix}-copy)`}));board.append(arrow,el('div',`a[${e.src}] → a[${e.dest}]`,'array-copy-label'));
+   if(moving){const ghost=el('div',F(e.value),'array-ghost');ghost.style.left=x1-20+'px';ghost.style.top=src.y-b.y+5+'px';board.append(ghost);const start=performance.now(),duration=Math.min(650,Number(q('Speed').value)*.8);const fly=now=>{const t=Math.min(1,(now-start)/duration);ghost.style.transform=`translate(${(x2-x1)*t}px,${-18*Math.sin(Math.PI*t)}px)`;if(t<1)copyFrame=requestAnimationFrame(fly);else{copyFrame=null;ghost.remove();const target=cells.children[e.dest].querySelector('.array-value');target.textContent=F(e.value);target.classList.add('pulse');}};copyFrame=requestAnimationFrame(fly);}
+  }
+ }
+ function render(animate=true){
+  if(frame!==null)cancelAnimationFrame(frame);if(copyFrame!==null)cancelAnimationFrame(copyFrame);frame=copyFrame=null;
+  const err={limits:T('Se folosesc numere întregi între 0 și 6.','Нужны целые числа от 0 до 6.'),input:T('Cel mult 8 întregi între 0 și 100000 în fiecare atelier.','Не более 8 целых чисел от 0 до 100000 для каждой мастерской.'),array:T('Cel mult 8 numere finite între −1000000 și 1000000.','Не более 8 конечных чисел от −1000000 до 1000000.'),index:T('k trebuie să fie un indice activ: de la 0 la n−1.','k должен быть активным индексом: от 0 до n−1.'),empty:T('Tabloul este vid. Nu există un element de șters.','Массив пуст. Удалять нечего.')};q('Error').textContent=err[error]||'';
+  if(!trace)return;const e=trace.events[at],last=at===trace.events.length-1;
+  q('Next').disabled=!!error||last;q('Back').disabled=at===0;q('Play').disabled=!!error||last;q('Progress').textContent=T(`Pas ${at+1} / ${trace.events.length}`,`Шаг ${at+1} / ${trace.events.length}`);q('Status').textContent=description(e);q('Status').classList.toggle('warning',e.type==='paused');
+  q('Code').replaceChildren(...trace.lines.map((v,i)=>{const skipped=kind==='nested'&&['continue','break','filtered'].includes(e.type)&&i===trace.map.body;const row=el('span',undefined,'code-line'+(i===e.line?' current':'')+(skipped?' skipped':'')+(i===e.line&&e.type==='break'?' jump-stop':'')+(i===e.line&&e.type==='continue'?' jump-continue':''));row.append(el('span',String(i+1),'line-no'),el('span',v,'line-text'));return row;}));
+  if(kind==='nested'){
+   q('Goal').textContent=cfg.mode==='input'?T('Ciclul for schimbă atelierul. În fiecare atelier, while citește până la 0.','for меняет мастерскую. В каждой мастерской while считывает до 0.'):cfg.mode==='triangle'?T('Pe rândul i, j pornește de la 1 și ajunge până la i.','В ряду i переменная j начинается с 1 и доходит до i.'):T('i alege rândul. Pentru fiecare i, j parcurge din nou toate locurile.','i выбирает ряд. Для каждого i переменная j заново проходит все места.');
+   nestedVisual(e);const vars=cfg.mode==='input'?[['i',e.i],['x',e.x],['subtotal',e.subtotal],['total',e.total]]:[['i',e.i],['j',e.j],[T('afișări','выводов'),e.printed]];q('Vars').replaceChildren(...vars.map(([k,v])=>el('span',`${k} = ${F(v)}`)));
+   q('Output').textContent=e.output.length?e.output.map(x=>x||'↵').join('\n'):T('Nimic afișat încă','Вывода пока нет');q('Route').textContent=e.type==='break'?T('Traseu: break → sfârșit de rând → i++','Путь: break → конец ряда → i++'):e.type==='continue'?T('Traseu: continue → j++ → testul interior','Путь: continue → j++ → внутреннее условие'):e.type==='innerInit'?T('Inițializarea interioară se repetă pentru fiecare i.','Внутренняя инициализация повторяется для каждого i.'):e.type==='done'?'':T('Se urmăresc separat contorul exterior și contorul interior.','Внешний и внутренний счётчики отслеживаются отдельно.');
+   q('Explain').textContent=cfg.mode==='input'?T('0 încheie doar citirile atelierului curent. Următorul atelier își pornește subtotalul de la 0, iar totalul se păstrează.','0 завершает ввод только в текущей мастерской. Следующая мастерская начинает subtotal с 0, а total сохраняется.'):T('Ciclul interior se execută complet la fiecare intrare în corpul celui exterior. continue avansează doar j. break oprește doar ciclul interior. ↵ marchează un rând gol în ieșire.','Внутренний цикл выполняется заново при каждом входе в тело внешнего. continue продвигает только j. break завершает только внутренний цикл. ↵ обозначает пустую строку вывода.');
+  }else{
+   q('Goal').textContent=cfg.mode==='scan'?T('Se prelucrează numai a[0] ... a[n−1]. Media se calculează la sfârșit.','Обрабатываются только a[0] ... a[n−1]. Среднее вычисляется в конце.'):T('Se șterge a[k]. Valorile din dreapta se copiază câte o poziție la stânga.','Удаляется a[k]. Значения справа копируются на одну позицию влево.');
+   arrayVisual(e,animate);q('Vars').replaceChildren(...[['i',e.i],...(cfg.mode==='delete'?[['k',e.k]]:[]),['n',e.n]].map(([k,v])=>el('span',`${k} = ${F(v)}`)));
+   const summary=cfg.mode==='delete'?[[T('Lungime activă','Активная длина'),e.n],[T('Capacitate','Вместимость'),8],[T('Copieri','Копирований'),e.copies]]:[[T('Sumă curentă','Текущая сумма'),e.sum],[T('Minim','Минимум'),e.min],[T('Maxim','Максимум'),e.max],[T('Primul indice maxim','Первый индекс максимума'),e.maxIndex],[T(`Număr > ${F(cfg.threshold)}`,`Число > ${F(cfg.threshold)}`),e.count],[T('Medie finală','Итоговое среднее'),e.mean]];
+   q('Summary').replaceChildren(...summary.map(([k,v])=>{const row=el('div');row.append(el('dt',k),el('dd',F(v)));return row;}));
+   q('Result').textContent=cfg.mode==='delete'?T('Elemente active: ','Активные элементы: ')+(e.n?e.arr.slice(0,e.n).map(F).join(' '):T('niciunul','нет')):e.mean!==null?T('Media afișată: ','Выведенное среднее: ')+F(e.mean):e.type==='empty'?T('Nu se execută afișarea mediei.','Вывод среднего не выполняется.'):T('Media se va afișa după parcurgere.','Среднее будет выведено после обхода.');
+   q('Route').textContent=e.type==='copy'?T('Sursa rămâne pe loc. Doar destinația primește copia.','Источник остаётся на месте. Копию получает только назначение.'):e.type==='shorten'?T('n scade o singură dată, după ultima copie.','n уменьшается один раз после последней копии.'):e.type==='mean'||e.type==='empty'?'':T('Celulele gri nu intră în prelucrare.','Серые ячейки не участвуют в обработке.');
+   q('Explain').textContent=cfg.mode==='delete'?T('Pentru primul element sunt necesare cele mai multe copii. Pentru ultimul sau singurul element nu se copiază nimic: se execută direct n--.','Для первого элемента требуется больше всего копий. Для последнего или единственного ничего копировать не нужно: выполняется сразу n--.'):T('Extremele pornesc de la primul element, inclusiv când toate numerele sunt negative. Comparația strictă > păstrează primul indice al maximului. Pentru n = 0 nu se citește a[0] și nu se împarte la 0.','Экстремумы получают первый элемент, даже если все числа отрицательны. Строгое > сохраняет первый индекс максимума. При n = 0 нет обращения к a[0] и деления на 0.');
+  }
+  q('Route').hidden=!q('Route').textContent;draw(e,animate);
+ }
+ function step(){if(!error&&at<trace.events.length-1){at++;render();}}
+ function play(){if(timer!==null){stop();return;}if(error||at===trace.events.length-1)return;const tick=()=>{if(q('Next').closest('section[id]').hidden||at===trace.events.length-1){stop();return;}step();if(at===trace.events.length-1){stop();return;}timer=setTimeout(tick,Number(q('Speed').value));};timer=setTimeout(tick,Number(q('Speed').value));q('Play').textContent=T('❚❚ Pauză','❚❚ Пауза');q('Play').setAttribute('aria-pressed','true');}
+ q('Next').addEventListener('click',()=>{stop();step();});q('Back').addEventListener('click',()=>{stop();if(at>0){at--;render(false);}});q('Restart').addEventListener('click',()=>{stop();at=0;render(false);});q('Play').addEventListener('click',play);q('Speed').addEventListener('change',()=>{if(timer!==null){stop();play();}});
+ if(kind==='nested'){
+  ['Mode','Rule','Rows','Cols','Input1','Input2','Input3'].forEach(k=>q(k).addEventListener('change',prepare));
+ }else{
+  ['Mode','Values','Index','Threshold'].forEach(k=>q(k).addEventListener('change',prepare));
+  q('Preset').addEventListener('change',()=>{const a={mixed:[6,9,7,9,5],negative:[-6,-2,-9],equal:[9,4,9],single:[4],empty:[]}[q('Preset').value];q('Values').value=a.join(' ');q('Index').value=a.length>1?1:0;prepare();});
+ }
+ prepare();return {setLanguage(v){stop();lang=v;labels();render(false);}};
+}
+window.theme11=lesson('m11','nested');window.theme12=lesson('m12','array');
+})();
+
+</script>
+
+<script>
+(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.WhileLesson=factory();})(typeof window==='undefined'?globalThis:window,function(){
+'use strict';
+function trace(cfg){
+ const lines=[],events=[],map={},line=(key,code)=>{map[key]=lines.length;lines.push(code);};
+ let state={x:null,sum:0,count:0,pos:0,volume:cfg.start??0,turns:0,marks:[],output:[]};
+ const emit=(type,node,next,extra={})=>{events.push({...state,marks:[...state.marks],output:[...state.output],type,node,next,line:map[node],...extra});};
+ if(cfg.mode==='tank'){
+  if(![cfg.start,cfg.target,cfg.portion].every(Number.isInteger)||cfg.start<0||cfg.start>20||cfg.target<1||cfg.target>20||cfg.portion<1||cfg.portion>10)throw Error('tank');
+  line('init',`int volum = ${cfg.start}, prag = ${cfg.target};`);
+  line('test','while (volum < prag) {');line('add',`    volum += ${cfg.portion};`);line('close','}');line('done','cout << volum;');
+  emit('init','init','test');
+  while(true){const ok=state.volume<cfg.target;emit('test','test',ok?'add':'done',{condition:ok,expr:`${state.volume} < ${cfg.target}`});if(!ok)break;
+   const before=state.volume;state.volume+=cfg.portion;state.turns++;emit('add','add','test',{before});
+  }
+  state.output=[String(state.volume)];emit('done','done',null);
+ }else{
+  const input=cfg.input;
+  if(!Array.isArray(input)||input.length>10||input.some(v=>!Number.isInteger(v)||Math.abs(v)>10000))throw Error('input');
+  if(cfg.mode==='sentinel'){
+   line('init','int x, suma = 0, numar = 0;');line('firstRead','cin >> x;');line('test','while (x != 0) {');line('sum','    suma += x;');line('count','    numar++;');line('read','    cin >> x;');line('close','}');line('done','cout << suma << " " << numar;');
+  }else if(cfg.mode==='validation'){
+   line('init','int nota;');line('firstRead','cin >> nota;');line('test','while (nota < 1 || nota > 10) {');line('prompt','    cout << "Reintroduceti nota: ";');line('read','    cin >> nota;');line('close','}');line('done','cout << "Nota acceptata: " << nota;');
+  }else throw Error('mode');
+  emit('init','init','firstRead');
+  const read=node=>{if(state.pos>=input.length){emit('waiting',node,null);return false;}state.x=input[state.pos];state.marks[state.pos]='read';state.pos++;emit('read',node,'test');return true;};
+  if(!read('firstRead'))return {lines,map,events};
+  while(true){
+   const valid=state.x>=1&&state.x<=10,ok=cfg.mode==='sentinel'?state.x!==0:!valid;
+   state.marks[state.pos-1]=cfg.mode==='sentinel'?(ok?'ready':'sentinel'):(valid?'valid':'invalid');
+   emit('test','test',ok?(cfg.mode==='sentinel'?'sum':'prompt'):'done',{condition:ok,expr:cfg.mode==='sentinel'?`${state.x} != 0`:`${state.x} < 1 || ${state.x} > 10`});
+   if(!ok)break;
+   if(cfg.mode==='sentinel'){
+    const before=state.sum;state.sum+=state.x;state.marks[state.pos-1]='added';emit('sum','sum','count',{before});state.count++;emit('count','count','read');
+   }else{state.output.push('Reintroduceti nota: ');state.turns++;emit('prompt','prompt','read');}
+   if(!read('read'))return {lines,map,events};
+  }
+  state.output.push(cfg.mode==='sentinel'?`${state.sum} ${state.count}`:`Nota acceptata: ${state.x}`);emit('done','done',null);
+ }
+ return {lines,map,events};
+}
+return {trace};
+});
+
+</script>
+<script>
+(function(){
+'use strict';
+const q=s=>document.getElementById('m9'+s),NS='http://www.w3.org/2000/svg';
+const el=(tag,value,cls)=>{const e=document.createElement(tag);if(value!==undefined)e.textContent=value;if(cls)e.className=cls;return e;};
+const sv=(tag,attrs={},value)=>{const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(value!==undefined)e.textContent=value;return e;};
+let lang='ro',cfg,trace,at=0,timer=null,frame=null,waterFrame=null,error='';
+const T=(ro,ru)=>lang==='ro'?ro:ru;
+const presets={tank:[['normal',[2,10,3]],['exact',[1,10,3]],['full',[10,10,3]]],sentinel:[['normal',[12,8,0,99]],['zero',[0,12]],['negative',[10,-3,5,0]],['missing',[12,8]]],validation:[['normal',[0,12,8]],['valid',[7,15]],['bounds',[1]],['missing',[0,12]]]};
+function stop(){if(timer!==null)clearTimeout(timer);timer=null;q('Play').textContent=T('▶ Redare','▶ Воспроизвести');q('Play').setAttribute('aria-pressed','false');}
+function labels(){
+ const copy={Title:T('Tema 9 · Cicluri cu număr necunoscut de pași','Тема 9 · Циклы с неизвестным числом шагов'),ModeLabel:T('Exemplu','Пример'),PresetLabel:T('Caz de verificat','Проверяемый случай'),StartLabel:T('La început, l','В начале, л'),TargetLabel:T('Prag, l','Порог, л'),PortionLabel:T('Adaos, l','Добавка, л'),InputLabel:T('Valori introduse la tastatură · maximum 10 întregi','Значения с клавиатуры · не более 10 целых чисел'),Back:T('← Înapoi','← Назад'),Next:T('Pasul următor →','Следующий шаг →'),Restart:T('↺ De la început','↺ Сначала'),SpeedLabel:T('Viteză','Скорость'),VisualTitle:T('Datele și traseul execuției','Данные и ход выполнения'),CodeTitle:T('Codul executat','Выполняемый код'),OutputTitle:T('Pe ecran','На экране'),ExplainTitle:T('Regula ilustrată','Показанное правило')};
+ for(const[k,v]of Object.entries(copy))q(k).textContent=v;
+ [T('Rezervor · repetare până la un prag','Резервуар · повторение до порога'),T('Încasări · citire până la 0','Поступления · ввод до 0'),T('Notă · repetarea unei citiri invalide','Оценка · повтор неверного ввода')].forEach((s,i)=>q('Mode').options[i].textContent=s);
+ [T('Lent','Медленно'),T('Normal','Обычная'),T('Rapid','Быстро')].forEach((s,i)=>q('Speed').options[i].textContent=s);
+ const names={tank:{normal:T('Se depășește pragul','Порог будет превышен'),exact:T('Se atinge exact pragul','Порог достигается точно'),full:T('Prag atins de la început','Порог уже достигнут')},sentinel:{normal:T('0 urmat de o altă valoare','После 0 есть ещё значение'),zero:T('Prima valoare este 0','Первое значение — 0'),negative:T('Apare și o corecție negativă','Есть отрицательная поправка'),missing:T('Fără 0 · se așteaptă citirea','Нет 0 · ожидание ввода')},validation:{normal:T('Două valori invalide, apoi 8','Два неверных значения, затем 8'),valid:T('Prima valoare este validă','Первое значение верно'),bounds:T('Valoare de la limită: 1','Граничное значение: 1'),missing:T('Doar valori invalide','Только неверные значения')}};
+ const selected=q('Preset').value;
+ q('Preset').replaceChildren(...presets[q('Mode').value].map(([key])=>{const o=el('option',names[q('Mode').value][key]);o.value=key;return o;}));
+ if([...q('Preset').options].some(o=>o.value===selected))q('Preset').value=selected;
+ if(timer===null)q('Play').textContent=T('▶ Redare','▶ Воспроизвести');
+}
+function applyPreset(){
+ const mode=q('Mode').value,a=presets[mode].find(([k])=>k===q('Preset').value)[1];
+ if(mode==='tank'){['Start','Target','Portion'].forEach((k,i)=>q(k).value=a[i]);}else q('Input').value=a.join(' ');
+ prepare();
+}
+function prepare(){
+ stop();error='';const mode=q('Mode').value;
+ ['Start','Target','Portion'].forEach(k=>q(k+'Group').hidden=mode!=='tank');q('InputGroup').hidden=mode==='tank';
+ try{
+  const input=q('Input').value.trim()?q('Input').value.trim().split(/[\s,;]+/).map(Number):[];
+  const start=Number(q('Start').value),target=Number(q('Target').value),portion=Number(q('Portion').value);
+  if(mode==='tank'&&['Start','Target','Portion'].some(k=>!/^\d+$/.test(q(k).value)))throw Error('tank');
+  cfg={mode,start,target,portion,input};trace=window.WhileLesson.trace(cfg);at=0;
+ }catch(e){error=e.message;}
+ render(false);
+}
+function describe(e){
+ if(e.type==='test')return `${e.expr} → ${e.condition}. `+(e.condition?(cfg.mode==='validation'?T('Nota este în afara intervalului. Se cere altă valoare.','Оценка вне диапазона. Запрашивается новое значение.'):T('Condiția este adevărată. Se execută corpul ciclului.','Условие истинно. Выполняется тело цикла.')):T('Condiția este falsă. Corpul se sare; se continuă după while.','Условие ложно. Тело пропускается; выполнение продолжается после while.'));
+ if(e.type==='init')return cfg.mode==='tank'?T(`volum = ${e.volume}. Înainte de orice adaos se verifică pragul.`,`volum = ${e.volume}. До любой добавки проверяется порог.`):cfg.mode==='sentinel'?T('Suma și contorul pornesc de la 0. Urmează prima citire, înainte de while.','Сумма и счётчик начинаются с 0. Далее первый ввод до while.'):T('Se declară nota. Prima valoare se citește înainte de while.','Объявляется переменная nota. Первое значение считывается до while.');
+ if(e.type==='add')return T(`${e.before} + ${cfg.portion} = ${e.volume} l. După modificare, condiția se verifică din nou.`,`${e.before} + ${cfg.portion} = ${e.volume} л. После изменения условие проверяется снова.`);
+ if(e.type==='read')return cfg.mode==='sentinel'?T(`cin citește x = ${e.x}. Valoarea nu se adună încă: mai întâi se verifică x != 0.`,`cin считывает x = ${e.x}. Значение пока не складывается: сначала проверяется x != 0.`):T(`cin citește nota = ${e.x}. Se verifică dacă este în afara intervalului 1…10.`,`cin считывает nota = ${e.x}. Проверяется, выходит ли оценка за диапазон 1…10.`);
+ if(e.type==='sum')return T(`suma = ${e.before} + (${e.x}) = ${e.sum}. Valoarea curentă intră în total.`,`suma = ${e.before} + (${e.x}) = ${e.sum}. Текущее значение добавлено к общей сумме.`);
+ if(e.type==='count')return T(`numar devine ${e.count}. Urmează citirea altei valori în corpul ciclului.`,`numar теперь ${e.count}. Далее ввод нового значения в теле цикла.`);
+ if(e.type==='prompt')return T('Se afișează cererea de reintroducere. Următorul cin poate schimba rezultatul condiției.','Выводится запрос повторного ввода. Следующий cin может изменить результат условия.');
+ if(e.type==='waiting')return T('Programul a ajuns la cin și așteaptă încă o valoare. Lipsa datelor din exemplu nu încheie ciclul.','Программа дошла до cin и ждёт новое значение. Конец данных примера не завершает цикл.');
+ if(cfg.mode==='tank')return T(`Se afișează ${e.volume} l. Corpul s-a executat de ${e.turns} ori.`,`Выводится ${e.volume} л. Тело выполнено ${e.turns} раз.`);
+ if(cfg.mode==='sentinel')return T(`Se afișează suma ${e.sum} și numărul ${e.count}. Santinela 0 nu a fost adunată și nici numărată.`,`Выводятся сумма ${e.sum} и количество ${e.count}. Значение 0 не добавлено к сумме и не подсчитано.`);
+ return T(`Nota ${e.x} este acceptată. Condiția de repetare a devenit falsă.`,`Оценка ${e.x} принята. Условие повторения стало ложным.`);
+}
+function scene(e,animate){
+ const root=q('Scene');root.replaceChildren();
+ if(cfg.mode==='tank'){
+  const max=Math.max(cfg.start,cfg.target+cfg.portion,1),height=v=>Math.min(100,v/max*100)+'%';
+  const wrap=el('div',undefined,'m9-tank-scene'),tank=el('div',undefined,'m9-tank'),water=el('div',undefined,'m9-water'),target=el('div',undefined,'m9-target');
+  tank.setAttribute('role','img');tank.setAttribute('aria-label',T(`Rezervor: ${e.volume} litri; prag ${cfg.target} litri.`,`Резервуар: ${e.volume} литров; порог ${cfg.target} литров.`));
+  const moving=animate&&e.type==='add'&&!matchMedia('(prefers-reduced-motion:reduce)').matches;
+  water.style.height=height(moving?e.before:e.volume);target.style.bottom=height(cfg.target);tank.append(water,target);
+  if(moving){tank.append(el('div',undefined,'m9-drop'));waterFrame=requestAnimationFrame(()=>{water.style.height=height(e.volume);waterFrame=null;});}
+  const label=el('div',undefined,'m9-tank-label');label.append(el('strong',e.volume+T(' l',' л')),el('div',T(`Linia punctată: prag ${cfg.target} l`,`Пунктир: порог ${cfg.target} л`)),el('div',T(`La o repetare: +${cfg.portion} l`,`За одно повторение: +${cfg.portion} л`)),el('div',T(`Repetări executate: ${e.turns}`,`Выполнено повторений: ${e.turns}`)));wrap.append(tank,label);root.append(wrap);
+ }else{
+  root.append(el('div',T('Citiri cin, de la stânga la dreapta','Ввод cin слева направо'),'m9-input-caption'));
+  const queue=el('div',undefined,'m9-input-queue');
+  const names={read:T('citit','считано'),ready:T('de adunat','к сумме'),added:T('adunat','добавлено'),sentinel:T('santinelă','стоп-сигнал'),invalid:T('invalid','неверно'),valid:T('valid','верно')};
+  cfg.input.forEach((v,i)=>{const mark=e.marks[i],card=el('div',undefined,'m9-input-card '+(mark||'unread')+(i===e.pos-1?' current':''));card.append(el('strong',String(v)),el('small',names[mark]||T('necitit','не считано')));queue.append(card);});
+  if(!cfg.input.length)queue.append(el('span',T('Nicio valoare pregătită pentru cin.','Для cin пока нет значений.')));root.append(queue);
+  root.append(el('div',e.type==='done'&&e.pos<cfg.input.length?T('Valorile necitite rămân după încheierea ciclului.','После завершения цикла остаются несчитанные значения.'):cfg.mode==='sentinel'?T('0 este semnal de oprire. Celelalte valori sunt date de prelucrat.','0 — сигнал остановки. Остальные значения — обрабатываемые данные.'):T('Sunt acceptate notele întregi de la 1 la 10, inclusiv.','Допустимы целые оценки от 1 до 10 включительно.'),'m9-input-caption'));
+ }
+}
+function draw(e,animate){
+ const tank=cfg.mode==='tank',sentinel=cfg.mode==='sentinel',nodes=[],edges=[];
+ const N=(id,x,y,label,diamond=false)=>nodes.push({id,x,y,label,diamond}),E=(a,b,path,label='',x=0,y=0)=>edges.push({a,b,path,label,x,y});
+ const test=tank?'volum < prag?':sentinel?'x != 0?':T('nota în afara 1…10?','nota вне 1…10?');
+ N('init',135,32,tank?'volum = '+cfg.start:sentinel?'suma=0; numar=0':'int nota');
+ if(!tank)N('firstRead',135,105,sentinel?'cin >> x':'cin >> nota');
+ N('test',tank?135:400,tank?135:105,test,true);
+ const tx=tank?135:400,ty=tank?135:105;
+ if(tank){N('add',420,135,'volum += '+cfg.portion);N('done',135,300,'cout << volum');E('init','test','M135 53V105');E('test','add','M235 135H330','true',266,121);E('add','test','M420 156V225H280V135H235');E('test','done','M135 165V279','false',145,230);}
+ else{
+  N(sentinel?'sum':'prompt',400,205,sentinel?'suma += x':'cout << "..."');
+  if(sentinel)N('count',400,280,'numar++');
+  N('read',135,sentinel?280:205,sentinel?'cin >> x':'cin >> nota');N('done',590,105,'cout << ...');
+  E('init','firstRead','M135 53V84');E('firstRead','test','M225 105H300');
+  E('test',sentinel?'sum':'prompt','M400 135V184','true',410,166);E('test','done','M500 105H510','false',501,87);
+  if(sentinel){E('sum','count','M400 226V259');E('count','read','M310 280H225');}else E('prompt','read','M310 205H225');
+  E('read','test',`M45 ${sentinel?280:205}H22V155H270V105H300`);
+ }
+ const svg=sv('svg',{viewBox:'0 0 700 340',role:'img','aria-label':describe(e)}),defs=sv('defs');
+ for(const[name,color]of [['base','#b4bbb7'],['active','#147872'],['stop','#bc3e39']]){const m=sv('marker',{id:'m9-arrow-'+name,viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:7,markerHeight:7,orient:'auto'});m.append(sv('path',{d:'M0 0L10 5L0 10z',fill:color}));defs.append(m);}svg.append(defs);let current;
+ for(const a of edges){const active=e.node===a.a&&e.next===a.b,stop=active&&e.type==='test'&&!e.condition;const path=sv('path',{d:a.path,class:'cycle-edge'+(active?' active':'')+(stop?' stop':''),'marker-end':`url(#m9-arrow-${active?(stop?'stop':'active'):'base'})`,'data-edge':a.a+'>'+a.b});svg.append(path);if(active)current=path;if(a.label)svg.append(sv('text',{x:a.x,y:a.y,class:'cycle-edge-label'},a.label));}
+ for(const n of nodes){const g=sv('g',{class:'cycle-node'+(e.node===n.id?' active':'')});g.append(n.diamond?sv('polygon',{points:`${n.x} ${n.y-30},${n.x+100} ${n.y},${n.x} ${n.y+30},${n.x-100} ${n.y}`}):sv('rect',{x:n.x-90,y:n.y-21,width:180,height:42,rx:7}));g.append(sv('text',{x:n.x,y:n.y+6,'text-anchor':'middle'},n.label));svg.append(g);}
+ q('Flow').replaceChildren(svg);
+ if(current){const dot=sv('circle',{r:6,class:'cycle-dot'+(e.type==='test'&&!e.condition?' stop':'')});svg.append(dot);const len=current.getTotalLength(),start=performance.now(),moving=animate&&!matchMedia('(prefers-reduced-motion:reduce)').matches,duration=Math.min(650,Number(q('Speed').value)*.8);const move=now=>{const t=moving?Math.min(1,(now-start)/duration):1,p=current.getPointAtLength(len*t);dot.setAttribute('cx',p.x);dot.setAttribute('cy',p.y);if(t<1)frame=requestAnimationFrame(move);else frame=null;};frame=requestAnimationFrame(move);}
+}
+function render(animate=true){
+ if(frame!==null)cancelAnimationFrame(frame);if(waterFrame!==null)cancelAnimationFrame(waterFrame);frame=waterFrame=null;
+ const tank=q('Mode').value==='tank',sentinel=q('Mode').value==='sentinel';
+ q('Goal').textContent=tank?T('Se adaugă apă cât timp volumul este sub prag. Numărul repetărilor rezultă din verificările succesive.','Вода добавляется, пока объём ниже порога. Число повторений определяется последовательными проверками.'):sentinel?T('Se însumează încasările până la citirea valorii 0. O valoare negativă poate reprezenta o corecție.','Поступления суммируются до ввода 0. Отрицательное значение может означать поправку.'):T('Citirea se repetă cât timp nota este invalidă: sub 1 sau peste 10.','Ввод повторяется, пока оценка неверна: меньше 1 или больше 10.');
+ q('Explain').textContent=tank?T('while verifică înaintea corpului. Dacă pragul este deja atins, nu se adaugă nimic. Condiția volum < prag permite depășirea pragului la ultimul adaos; nu cere egalitate.','while проверяет условие до тела. Если порог уже достигнут, добавления нет. Условие volum < prag допускает превышение порога при последней добавке; равенство не требуется.'):sentinel?T('Prima citire pregătește valoarea pentru test. Citirea din corp o înlocuiește înaintea testului următor. 0 nu este o încasare; încheie prelucrarea. Fără o citire nouă, aceeași valoare nenulă ar menține condiția adevărată.','Первый ввод подготавливает значение для проверки. Ввод в теле заменяет его перед следующей проверкой. 0 не является поступлением и завершает обработку. Без нового ввода то же ненулевое значение сохраняло бы истинность условия.'):T('Condiția din while descrie cazul în care citirea trebuie repetată. Pentru nota 1 sau 10, ambele comparații sunt false, deci valoarea este acceptată. Exemplul presupune intrări numerice întregi.','Условие while описывает случай, когда ввод нужно повторить. Для оценки 1 или 10 оба сравнения ложны, поэтому значение принимается. Пример предполагает ввод целых чисел.');
+ q('Error').textContent=error?(tank?T('Valori întregi: început 0…20 l, prag 1…20 l, adaos 1…10 l.','Целые значения: начало 0…20 л, порог 1…20 л, добавка 1…10 л.'):T('Se acceptă cel mult 10 numere întregi între −10000 și 10000.','Допускается не более 10 целых чисел от −10000 до 10000.')):'';
+ q('Workspace').hidden=!!error;
+ if(error||!trace){q('Back').disabled=q('Next').disabled=q('Play').disabled=q('Restart').disabled=true;q('Progress').textContent='';return;}
+ const e=trace.events[at],last=at===trace.events.length-1;
+ q('Back').disabled=at===0;q('Next').disabled=q('Play').disabled=last;q('Restart').disabled=false;q('Progress').textContent=T(`Pas ${at+1} / ${trace.events.length}`,`Шаг ${at+1} / ${trace.events.length}`);
+ q('Status').textContent=describe(e);q('Status').classList.toggle('warning',e.type==='waiting');
+ scene(e,animate);
+ const vars=tank?[['volum',e.volume],['prag',cfg.target]]:sentinel?[['x',e.x],['suma',e.sum],['numar',e.count]]:[['nota',e.x],[T('reintroduceri','повторных вводов'),e.turns]];
+ q('Vars').replaceChildren(...vars.map(([k,v])=>el('span',`${k} = ${v===null?'—':v}`)));
+ const box=q('Condition');box.className='m9-condition'+(e.type==='test'?(e.condition?' is-true':' is-false'):'');
+ box.replaceChildren(el('strong',e.type==='test'?`${e.expr} → ${e.condition}`:tank?'while (volum < prag)':sentinel?'while (x != 0)':'while (nota < 1 || nota > 10)'),el('span',e.type==='test'?(e.condition?T('true → se intră în corp','true → вход в тело'):T('false → se iese din ciclu','false → выход из цикла')):T('Condiția se evaluează numai la linia while.','Условие вычисляется только на строке while.')));
+ q('Code').replaceChildren(...trace.lines.map((v,i)=>{const row=el('span',undefined,'code-line'+(i===e.line?' current':''));row.append(el('span',String(i+1),'line-no'),el('span',v,'line-text'));return row;}));
+ q('Output').textContent=e.output.length?e.output.join('\n'):T('Nimic afișat încă','Вывода пока нет');
+ q('OutputNote').textContent=sentinel?T('La final: suma, apoi numărul valorilor prelucrate.','В конце: сумма, затем количество обработанных значений.'):!tank?T('Mesajele de pe ecran păstrează textul din codul C++.','Сообщения на экране сохраняют текст из кода C++.'):'';
+ q('Route').textContent=e.type==='waiting'?T('Se pot completa valorile de intrare; exemplul va fi reluat de la început.','Можно дополнить входные значения; пример начнётся заново.'):e.type==='test'&&!e.condition?T('Traseu: test fals → prima instrucțiune de după ciclu.','Путь: ложное условие → первая инструкция после цикла.'):tank?T('Traseu: test → adaos → același test.','Путь: проверка → добавка → та же проверка.'):T('Traseu: citire → test → corp → o nouă citire.','Путь: ввод → проверка → тело → новый ввод.');
+ draw(e,animate);
+}
+function step(){if(!error&&at<trace.events.length-1){at++;render();}}
+function play(){if(timer!==null){stop();return;}if(error||at===trace.events.length-1)return;const tick=()=>{if(document.getElementById('theme9').hidden||at===trace.events.length-1){stop();return;}step();if(at===trace.events.length-1){stop();return;}timer=setTimeout(tick,Number(q('Speed').value));};timer=setTimeout(tick,Number(q('Speed').value));q('Play').textContent=T('❚❚ Pauză','❚❚ Пауза');q('Play').setAttribute('aria-pressed','true');}
+q('Back').addEventListener('click',()=>{stop();if(at>0){at--;render(false);}});q('Next').addEventListener('click',()=>{stop();step();});q('Restart').addEventListener('click',()=>{stop();at=0;render(false);});q('Play').addEventListener('click',play);q('Speed').addEventListener('change',()=>{if(timer!==null){stop();play();}});
+q('Mode').addEventListener('change',()=>{q('Preset').replaceChildren();labels();applyPreset();});q('Preset').addEventListener('change',applyPreset);['Start','Target','Portion','Input'].forEach(k=>q(k).addEventListener('change',prepare));
+labels();prepare();window.theme9={setLanguage(v){stop();lang=v;labels();render(false);}};
+})();
+
+</script>
+
+<script>
+(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.ForLesson=factory();})(typeof window==='undefined'?globalThis:window,function(){
+'use strict';
+function trace(cfg){
+ if(!['labels','savings','fold'].includes(cfg.mode)||!Number.isInteger(cfg.n)||cfg.n<0||cfg.n>8)throw Error('limits');
+ if(cfg.mode==='savings'&&(!Number.isInteger(cfg.first)||cfg.first<0||cfg.first>100||!Number.isInteger(cfg.delta)||cfg.delta<0||cfg.delta>20))throw Error('money');
+ const lines=[],map={},events=[];const line=(key,code)=>{map[key]=lines.length;lines.push(code);};
+ let s={i:null,done:0,sum:null,layers:null,term:null,output:'',rows:[]};
+ const emit=(type,node,next,extra={})=>events.push({...s,rows:s.rows.map(r=>({...r})),type,node,next,line:map[node],...extra});
+ line('setup',`int n = ${cfg.n}, i;`);
+ if(cfg.mode==='savings')line('accumulator','int suma = 0, depunere;');
+ if(cfg.mode==='fold')line('accumulator','int straturi = 1;');
+ line('header','for (i = 1; i <= n; i++) {');
+ if(cfg.mode==='labels')line('body','    cout << i << " ";');
+ if(cfg.mode==='savings'){line('term',`    depunere = ${cfg.first} + (i - 1) * ${cfg.delta};`);line('body','    suma += depunere;');}
+ if(cfg.mode==='fold')line('body','    straturi *= 2;');
+ line('close','}');line('finish',cfg.mode==='labels'?'cout << "Gata";':cfg.mode==='savings'?'cout << suma;':'cout << straturi;');
+ emit('setup','setup',cfg.mode==='labels'?'init':'accumulator');
+ if(cfg.mode!=='labels'){if(cfg.mode==='savings')s.sum=0;else s.layers=1;emit('accumulator','accumulator','init');}
+ s.i=1;emit('init','header','test',{phase:'init'});
+ while(true){
+  const ok=s.i<=cfg.n;emit('test','header',ok?(cfg.mode==='savings'?'term':'body'):'finish',{phase:'test',condition:ok,expr:`${s.i} <= ${cfg.n}`});if(!ok)break;
+  s.rows.push({i:s.i,term:null,before:cfg.mode==='labels'?null:cfg.mode==='savings'?s.sum:s.layers,after:null,next:null,output:null});
+  if(cfg.mode==='savings'){s.term=cfg.first+(s.i-1)*cfg.delta;s.rows.at(-1).term=s.term;emit('term','term','body');}
+  const before=cfg.mode==='savings'?s.sum:s.layers;
+  if(cfg.mode==='labels'){s.output+=s.i+' ';s.rows.at(-1).output=String(s.i);}
+  if(cfg.mode==='savings'){s.sum+=s.term;s.rows.at(-1).after=s.sum;}
+  if(cfg.mode==='fold'){s.layers*=2;s.rows.at(-1).after=s.layers;}
+  s.done++;emit('body','body','advance',{before});
+  s.i++;s.rows.at(-1).next=s.i;emit('advance','header','test',{phase:'advance'});
+ }
+ s.output+=cfg.mode==='labels'?'Gata':cfg.mode==='savings'?String(s.sum):String(s.layers);emit('finish','finish',null);
+ return {lines,map,events};
+}
+return {trace};
+});
+
+</script>
+<script>
+(function(){
+'use strict';
+const q=s=>document.getElementById('m8'+s),NS='http://www.w3.org/2000/svg';
+const el=(tag,value,cls)=>{const e=document.createElement(tag);if(value!==undefined)e.textContent=value;if(cls)e.className=cls;return e;};
+const sv=(tag,attrs={},value)=>{const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(value!==undefined)e.textContent=value;return e;};
+let lang='ro',cfg,trace,at=0,timer=null,frame=null,transferFrame=null,error='';
+const T=(ro,ru)=>lang==='ro'?ro:ru;
+const F=n=>new Intl.NumberFormat(lang==='ro'?'ro-RO':'ru-RU').format(n);
+const moving=()=>!matchMedia('(prefers-reduced-motion:reduce)').matches;
+function stop(){if(timer!==null)clearTimeout(timer);timer=null;q('Play').textContent=T('▶ Redare','▶ Воспроизвести');q('Play').setAttribute('aria-pressed','false');}
+function labels(){
+ const copy={Title:T('Tema 8 · Cicluri cu număr cunoscut de pași','Тема 8 · Циклы с известным числом шагов'),ModeLabel:T('Exemplu','Пример'),PresetLabel:T('Caz de verificat','Проверяемый случай'),NLabel:T('Repetări n','Повторы n'),FirstLabel:T('Ziua 1, lei','День 1, леи'),DeltaLabel:T('Creștere/zi','Прирост/день'),Back:T('← Înapoi','← Назад'),Next:T('Pasul următor →','Следующий шаг →'),Restart:T('↺ De la început','↺ Сначала'),SpeedLabel:T('Viteză','Скорость'),VisualTitle:T('Datele și traseul execuției','Данные и ход выполнения'),CodeTitle:T('Codul executat','Выполняемый код'),OutputTitle:T('Pe ecran','На экране'),TraceTitle:T('Trasarea iterațiilor','Трассировка итераций'),ExplainTitle:T('Regula ilustrată','Показанное правило')};
+ for(const[k,v]of Object.entries(copy))q(k).textContent=v;
+ [T('Colete · etichete de la 1 la n','Посылки · номера от 1 до n'),T('Economii · depuneri zilnice în creștere','Сбережения · растущие ежедневные взносы'),T('Plierea unei foi · dublarea straturilor','Складывание листа · удвоение слоёв')].forEach((s,i)=>q('Mode').options[i].textContent=s);
+ [T('Patru repetări','Четыре повторения'),T('O singură repetare','Одно повторение'),T('Nicio repetare · n = 0','Без повторений · n = 0'),T('Număr modificat','Изменённое число')].forEach((s,i)=>q('Preset').options[i].textContent=s);
+ [T('Lent','Медленно'),T('Normal','Обычная'),T('Rapid','Быстро')].forEach((s,i)=>q('Speed').options[i].textContent=s);
+ if(timer===null)q('Play').textContent=T('▶ Redare','▶ Воспроизвести');
+}
+function prepare(){
+ stop();error='';const mode=q('Mode').value;q('FirstGroup').hidden=q('DeltaGroup').hidden=mode!=='savings';
+ try{
+  const n=Number(q('N').value),first=Number(q('First').value),delta=Number(q('Delta').value);
+  if(!/^\d+$/.test(q('N').value))throw Error('limits');
+  if(mode==='savings'&&['First','Delta'].some(k=>!/^\d+$/.test(q(k).value)))throw Error('money');
+  cfg={mode,n,first,delta};trace=window.ForLesson.trace(cfg);at=0;q('Preset').value=({4:'normal',1:'single',0:'zero'})[n]||'custom';
+ }catch(e){error=e.message;}
+ render(false);
+}
+function describe(e){
+ const mode=cfg.mode;
+ if(e.type==='setup')return T(`n = ${cfg.n}. Numărul repetărilor este stabilit înainte de ciclu. i încă nu a primit valoare.`,`n = ${cfg.n}. Число повторений задано до цикла. Переменной i ещё не присвоено значение.`);
+ if(e.type==='accumulator')return mode==='savings'?T('suma = 0: totalul pornește fără depuneri. Contorul i se va inițializa separat.','suma = 0: взносов в общей сумме пока нет. Счётчик i инициализируется отдельно.'):T('straturi = 1: înainte de plieri există un singur strat. Înmulțirile vor modifica această valoare.','straturi = 1: до складывания есть один слой. Умножения будут изменять это значение.');
+ if(e.type==='init')return T('i = 1 se execută o singură dată. Urmează primul test i <= n.','i = 1 выполняется один раз. Далее первая проверка i <= n.');
+ if(e.type==='test')return `${e.expr} → ${e.condition}. `+(e.condition?T(`Se intră în corp pentru repetarea ${e.i}.`,`Вход в тело для повторения ${e.i}.`):T('Condiția este falsă. Se continuă după ciclu; corpul nu se mai execută.','Условие ложно. Выполнение продолжается после цикла; тело больше не выполняется.'));
+ if(e.type==='term')return T(`Ziua ${e.i}: depunere = ${cfg.first} + (${e.i} − 1) × ${cfg.delta} = ${e.term} lei. Totalul este încă ${e.sum} lei.`,`День ${e.i}: depunere = ${cfg.first} + (${e.i} − 1) × ${cfg.delta} = ${e.term} леев. Общая сумма пока ${e.sum} леев.`);
+ if(e.type==='body')return mode==='labels'?T(`Se afișează ${e.i} și se etichetează coletul ${e.i}. i rămâne ${e.i} până la actualizare.`,`Выводится ${e.i}, посылка ${e.i} получает номер. i остаётся ${e.i} до обновления.`):mode==='savings'?T(`suma = ${e.before} + ${e.term} = ${e.sum} lei. i rămâne ${e.i}; depunerea și totalul au roluri diferite.`,`suma = ${e.before} + ${e.term} = ${e.sum} леев. i остаётся ${e.i}; взнос и общая сумма имеют разные роли.`):T(`O pliere dublează straturile: ${e.before} × 2 = ${e.layers}. i rămâne ${e.i}.`,`Одно складывание удваивает слои: ${e.before} × 2 = ${e.layers}. i остаётся ${e.i}.`);
+ if(e.type==='advance')return T(`i++: ${e.i-1} devine ${e.i}. Urmează testul i <= n, înaintea altui corp.`,`i++: ${e.i-1} становится ${e.i}. Далее проверка i <= n перед следующим выполнением тела.`);
+ return mode==='labels'?T(`Au fost afișate ${e.done} numere. La ultimul test, i = ${e.i}; valoarea ${e.i} nu a intrat în corp.`,`Выведено чисел: ${e.done}. При последней проверке i = ${e.i}; значение ${e.i} не попало в тело.`):mode==='savings'?T(`După ${e.done} depuneri se afișează totalul: ${e.sum} lei.`,`После ${e.done} взносов выводится общая сумма: ${e.sum} леев.`):T(`După ${e.done} plieri se afișează ${e.layers} straturi.`,`После ${e.done} складываний выводится число слоёв: ${e.layers}.`);
+}
+function scene(e,animate){
+ const root=q('Scene'),mode=cfg.mode;root.replaceChildren();
+ if(mode==='labels'||mode==='savings'){
+  const items=el('div',undefined,'m8-items');
+  for(let i=1;i<=cfg.n;i++){
+   const done=i<=e.done,current=i===e.i&&['test','term','body'].includes(e.type)&&!(e.type==='test'&&!e.condition),card=el('div',undefined,'m8-item'+(done?' done':'')+(current?' current':'')+(mode==='savings'?' m8-money':''));card.dataset.iteration=i;
+   if(mode==='labels'){
+    const parcel=el('div',undefined,'m8-parcel'+(animate&&moving()&&e.type==='body'&&i===e.i?' m8-label-arrive':''));
+    if(done)parcel.append(el('span',String(i),'m8-sticker'));card.append(parcel,el('small',T('Colet ','Посылка ')+i));
+   }else{
+    const amount=cfg.first+(i-1)*cfg.delta,known=done||(i===e.i&&['term','body'].includes(e.type));card.append(el('small',T('Ziua ','День ')+i),el('strong',known?String(amount):'—'));
+    const bar=el('div',undefined,'m8-bar'),fill=el('i');fill.style.height=known?Math.max(2,amount/Math.max(1,cfg.first+(cfg.n-1)*cfg.delta)*36)+'px':'2px';bar.append(fill);card.append(bar,el('small',done?T('adunat','добавлено'):known?T('de adunat','к сумме'):T('urmează','далее')));
+   }
+   items.append(card);
+  }
+  if(cfg.n===0)items.append(el('p',T('n = 0 · nu există elemente de prelucrat.','n = 0 · нет элементов для обработки.')));root.append(items);
+  if(mode==='savings'){
+   const total=el('div',undefined,'m8-total'+(animate&&e.type==='body'?' pulse':''));total.append(el('span',T('Total acumulat','Накопленная сумма')),el('strong',(e.sum===null?'—':F(e.sum))+T(' lei',' леев')));root.append(total);
+   if(animate&&moving()&&e.type==='body'){
+    const start=items.querySelector('[data-iteration="'+e.i+'"]'),b=root.getBoundingClientRect(),a=start.getBoundingClientRect(),z=total.getBoundingClientRect(),token=el('div','+'+e.term,'m8-transfer');
+    const x=a.x+a.width/2-b.x-20,y=a.y+a.height/2-b.y-10,dx=z.x+z.width*.7-b.x-x,dy=z.y+z.height/2-b.y-y;token.style.left=x+'px';token.style.top=y+'px';root.append(token);
+    const begin=performance.now(),duration=Math.min(650,Number(q('Speed').value)*.8),fly=now=>{const t=Math.min(1,(now-begin)/duration);token.style.transform=`translate(${dx*t}px,${dy*t}px)`;token.style.opacity=String(t>.8?(1-t)*5:1);if(t<1)transferFrame=requestAnimationFrame(fly);else{transferFrame=null;token.remove();}};transferFrame=requestAnimationFrame(fly);
+   }
+  }
+ }else{
+  const layers=e.layers??1,wrap=el('div',undefined,'m8-fold-scene'),stack=el('div',undefined,'m8-sheet-stack'),svg=sv('svg',{viewBox:'0 0 140 95',role:'img','aria-label':T(layers+' straturi',layers+' слоёв')});
+  const shown=Math.min(layers,16),gap=shown>1?Math.min(4,55/(shown-1)):0;
+  for(let j=0;j<shown;j++)svg.append(sv('path',{d:`M10 ${78-j*gap}L104 ${78-j*gap}L130 ${63-j*gap}L36 ${63-j*gap}Z`,fill:j===shown-1?'#cbe5df':'#f6f1e5',stroke:'#668d8c','stroke-width':1.3}));
+  if(layers>16)svg.append(sv('text',{x:65,y:94,'text-anchor':'middle',fill:'#38576a','font-size':12},T('schemă','схема')));stack.append(svg);
+  if(animate&&moving()&&e.type==='body')stack.append(el('div',undefined,'m8-fold-flap'));
+  const label=el('div',undefined,'m8-fold-label');label.append(el('strong',F(layers)+T(layers===1?' strat':' straturi',layers===1?' слой':' слоёв')),el('div',T('O pliere → numărul se dublează','Одно складывание → удвоение')),el('div',T('Înainte de plieri: 1 strat','До складывания: 1 слой')));wrap.append(stack,label);root.append(wrap);
+  const steps=el('div',undefined,'m8-steps');for(let i=1;i<=cfg.n;i++)steps.append(el('div',String(i),'m8-step'+(i<=e.done?' done':'')+(i===e.i?' current':'')));root.append(steps);
+ }
+ root.append(el('div',T(`Corp executat: ${e.done} din ${cfg.n} ori`,`Тело выполнено: ${e.done} из ${cfg.n} раз`),'m8-progress'));
+}
+function draw(e,animate){
+ const cfgNodes=[['init',120,35,'i = 1'],['test',120,140,'i <= n?',true],['body',420,140,T('corpul ciclului','тело цикла')],['advance',420,250,'i++'],['finish',120,305,T('după ciclu','после цикла')]];
+ const edges=[['init','test','M120 56V110'],['test','body','M195 140H330','true',250,127],['test','finish','M120 170V284','false',132,237],['body','advance','M420 161V229'],['advance','test','M330 250H260V140H195']];
+ const key=e.node==='header'?(e.phase==='init'?'init':e.phase==='advance'?'advance':'test'):e.node==='term'?'body':e.node;
+ let next=e.next==='term'?'body':e.next;
+ if(e.type==='term')next='body';
+ const svg=sv('svg',{viewBox:'0 0 590 345',role:'img','aria-label':describe(e)}),defs=sv('defs');
+ for(const[name,color]of [['base','#b4bbb7'],['active','#147872'],['stop','#bc3e39']]){const marker=sv('marker',{id:'m8-arrow-'+name,viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:7,markerHeight:7,orient:'auto'});marker.append(sv('path',{d:'M0 0L10 5L0 10z',fill:color}));defs.append(marker);}svg.append(defs);let current;
+ for(const[a,b,d,label,x,y]of edges){const active=key===a&&next===b,stop=active&&e.type==='test'&&!e.condition,p=sv('path',{d,class:'cycle-edge'+(active?' active':'')+(stop?' stop':''),'data-edge':a+'>'+b,'marker-end':`url(#m8-arrow-${active?(stop?'stop':'active'):'base'})`});svg.append(p);if(active)current=p;if(label)svg.append(sv('text',{x,y,class:'cycle-edge-label'},label));}
+ for(const[id,x,y,label,diamond]of cfgNodes){const g=sv('g',{class:'cycle-node'+(id===key?' active':'')});g.append(diamond?sv('polygon',{points:`${x} ${y-30},${x+75} ${y},${x} ${y+30},${x-75} ${y}`}):sv('rect',{x:x-90,y:y-21,width:180,height:42,rx:7}));g.append(sv('text',{x,y:y+6,'text-anchor':'middle'},label));svg.append(g);}
+ q('Flow').replaceChildren(svg);
+ if(current){const dot=sv('circle',{r:6,class:'cycle-dot'+(e.type==='test'&&!e.condition?' stop':'')});svg.append(dot);const len=current.getTotalLength(),start=performance.now(),duration=Math.min(650,Number(q('Speed').value)*.8),motion=animate&&moving();const move=now=>{const t=motion?Math.min(1,(now-start)/duration):1,p=current.getPointAtLength(t*len);dot.setAttribute('cx',p.x);dot.setAttribute('cy',p.y);if(t<1)frame=requestAnimationFrame(move);else frame=null;};frame=requestAnimationFrame(move);}
+}
+function code(e){
+ q('Code').replaceChildren(...trace.lines.map((v,i)=>{
+  const row=el('span',undefined,'code-line'+(i===e.line?' current':''));row.append(el('span',String(i+1),'line-no'));const text=el('span',undefined,'line-text');
+  if(i===trace.map.header){text.append(document.createTextNode('for ('));['i = 1','i <= n','i++'].forEach((value,k)=>{const span=el('span',value,'m8-header-part'+(i===e.line&&e.phase===['init','test','advance'][k]?' active':''));span.dataset.phase=['init','test','advance'][k];text.append(span,document.createTextNode(k===2?') {':'; '));});}else text.textContent=v;
+  row.append(text);return row;
+ }));
+ const names=[T('1 · o singură dată','1 · один раз'),T('2 · înainte de fiecare corp','2 · перед каждым телом'),T('3 · după fiecare corp','3 · после каждого тела')];
+ q('Anatomy').replaceChildren(...['i = 1','i <= n','i++'].map((value,i)=>{const box=el('div',undefined,e.phase===['init','test','advance'][i]?'active':'');box.append(el('small',names[i]),el('code',value));return box;}));
+}
+function table(e){
+ const savings=cfg.mode==='savings',fold=cfg.mode==='fold';
+ const heads=['i',savings?T('Depunere','Взнос'):fold?T('Înainte','До'):T('Afișat','Вывод'),...(savings?[T('Total după corp','Сумма после тела')]:fold?[T('După × 2','После × 2')]:[]),T('După i++','После i++')];
+ const tr=el('tr');heads.forEach(x=>tr.append(el('th',x)));q('Head').replaceChildren(tr);
+ q('Rows').replaceChildren(...e.rows.map(r=>{const row=el('tr',undefined,r.i===e.i?'current':'');const values=[r.i,savings?r.term:fold?r.before:r.output,...(savings||fold?[r.after]:[]),r.next];values.forEach(v=>row.append(el('td',v===null?'—':String(v))));return row;}));
+ if(!e.rows.length){const row=el('tr',undefined,'m8-empty-row'),cell=el('td',T('Nicio intrare în corp până la acest pas.','На этом шаге входа в тело ещё не было.'));cell.colSpan=heads.length;row.append(cell);q('Rows').append(row);}
+ q('TraceNote').textContent=e.type==='test'&&!e.condition?T(`Ultimul test: ${e.i} <= ${cfg.n} este fals. Nu există o iterație pentru i = ${e.i}.`,`Последняя проверка: ${e.i} <= ${cfg.n} — ложь. Итерации для i = ${e.i} нет.`):T('Se completează numai operațiile deja executate. — = operație neexecutată încă.','Показаны только уже выполненные операции. — = операция пока не выполнена.');
+}
+function render(animate=true){
+ if(frame!==null)cancelAnimationFrame(frame);if(transferFrame!==null)cancelAnimationFrame(transferFrame);frame=transferFrame=null;
+ const mode=q('Mode').value;
+ q('Goal').textContent=mode==='labels'?T('Pentru n colete se afișează etichetele 1, 2, …, n. Fiecare intrare în corp produce o singură etichetă.','Для n посылок выводятся номера 1, 2, …, n. Каждый вход в тело создаёт один номер.'):mode==='savings'?T('Se economisește timp de n zile. Depunerea crește zilnic cu aceeași sumă, iar suma adună toate depunerile.','Сбережения накапливаются n дней. Ежедневный взнос растёт на одну и ту же величину, а suma складывает все взносы.'):T('O foaie se pliază de n ori. La fiecare pliere, numărul straturilor se dublează: 1 → 2 → 4 → 8 → …','Лист складывается n раз. При каждом складывании число слоёв удваивается: 1 → 2 → 4 → 8 → …');
+ q('Explain').textContent=mode==='labels'?T('for execută i = 1 o singură dată. Apoi repetă: test, corp, i++. Cu i <= n sunt prelucrate valorile de la 1 la n, inclusiv. Pentru n = 0, primul test este fals și nu se execută corpul.','for выполняет i = 1 один раз. Затем повторяет: проверка, тело, i++. При i <= n обрабатываются значения от 1 до n включительно. При n = 0 первая проверка ложна и тело не выполняется.'):mode==='savings'?T('i numără zilele. depunere este suma unei singure zile, calculată prin primul termen + (i − 1) × creștere. suma este acumulatorul și pornește de la 0. Inițializarea lui este înaintea ciclului, astfel încât totalul se păstrează între iterații.','i считает дни. depunere — взнос за один день, вычисленный как первый член + (i − 1) × прирост. suma — накопитель, начинающийся с 0. Его инициализация находится до цикла, поэтому общая сумма сохраняется между итерациями.'):T('i numără plierile. straturi acumulează înmulțirile și pornește de la 1. Dacă ar porni de la 0, fiecare dublare ar da tot 0. Pentru n = 0 rămâne un singur strat: foaia nu a fost pliată.','i считает складывания. straturi накапливает умножения и начинается с 1. Если начать с 0, каждое удвоение снова даст 0. При n = 0 остаётся один слой: лист не складывался.');
+ q('Error').textContent=error?(error==='money'?T('Prima depunere: întreg 0…100. Creștere zilnică: întreg 0…20.','Первый взнос: целое 0…100. Ежедневный прирост: целое 0…20.'):T('n trebuie să fie un număr întreg de la 0 la 8.','n должно быть целым числом от 0 до 8.')):'';q('Workspace').hidden=!!error;
+ if(error||!trace){q('Back').disabled=q('Next').disabled=q('Play').disabled=q('Restart').disabled=true;q('Progress').textContent='';return;}
+ const e=trace.events[at],last=at===trace.events.length-1;
+ q('Back').disabled=at===0;q('Next').disabled=q('Play').disabled=last;q('Restart').disabled=false;q('Progress').textContent=T(`Pas ${at+1} / ${trace.events.length}`,`Шаг ${at+1} / ${trace.events.length}`);q('Status').textContent=describe(e);
+ scene(e,animate);code(e);table(e);draw(e,animate);
+ const vars=[['i',e.i],['n',cfg.n],...(mode==='savings'?[['depunere',e.term],['suma',e.sum]]:mode==='fold'?[['straturi',e.layers]]:[])];
+ q('Vars').replaceChildren(...vars.map(([k,v])=>el('span',`${k} = ${v===null?'—':v}`)));
+ q('Output').textContent=e.output||T('Nimic afișat încă','Вывода пока нет');
+ q('Route').textContent=e.type==='init'?T('Inițializare → primul test. Inițializarea nu se repetă.','Инициализация → первая проверка. Инициализация не повторяется.'):e.type==='advance'?T('Actualizare → test. Nu se revine la i = 1.','Обновление → проверка. Возврата к i = 1 нет.'):e.type==='test'&&!e.condition?T('Test fals → instrucțiunea de după ciclu.','Ложная проверка → инструкция после цикла.'):e.type==='term'?T('Calculul depunerii → adunarea ei la total. Contorul rămâne neschimbat.','Расчёт взноса → добавление к сумме. Счётчик не меняется.'):T('Ordine: test → corp → i++ → test.','Порядок: проверка → тело → i++ → проверка.');
+}
+function step(){if(!error&&at<trace.events.length-1){at++;render();}}
+function play(){if(timer!==null){stop();return;}if(error||at===trace.events.length-1)return;const tick=()=>{if(document.getElementById('theme8').hidden||at===trace.events.length-1){stop();return;}step();if(at===trace.events.length-1){stop();return;}timer=setTimeout(tick,Number(q('Speed').value));};timer=setTimeout(tick,Number(q('Speed').value));q('Play').textContent=T('❚❚ Pauză','❚❚ Пауза');q('Play').setAttribute('aria-pressed','true');}
+q('Next').addEventListener('click',()=>{stop();step();});q('Back').addEventListener('click',()=>{stop();if(at>0){at--;render(false);}});q('Restart').addEventListener('click',()=>{stop();at=0;render(false);});q('Play').addEventListener('click',play);q('Speed').addEventListener('change',()=>{if(timer!==null){stop();play();}});
+q('Mode').addEventListener('change',prepare);['N','First','Delta'].forEach(k=>q(k).addEventListener('change',prepare));q('Preset').addEventListener('change',()=>{q('N').value={normal:4,single:1,zero:0}[q('Preset').value];prepare();});
+labels();prepare();window.theme8={setLanguage(v){stop();lang=v;labels();render(false);}};
+})();
+
+</script>
+<script>
+
+(()=>{
+
+'use strict';
+
+const themes=new Map();let active='8';const menu=document.getElementById('topicButtons'),language=document.getElementById('language');
+
+function text(pair){return pair[language.value==='ru'?1:0];}
+
+function show(id){if(!themes.has(id))return;active=id;for(const [key,theme]of themes){document.getElementById(theme.elementId).hidden=key!==active;theme.button.setAttribute('aria-pressed',String(key===active));}try{localStorage.setItem('structured-course-theme',active);}catch{}document.title=text(['Programare structurată','Структурное программирование'])+' - '+id;}
+
+function registerTheme(id,definition){if(themes.has(id))throw new Error('Duplicate theme '+id);const button=document.createElement('button');button.type='button';button.addEventListener('click',()=>show(id));menu.append(button);themes.set(id,{...definition,button});translate();show(active);}
+
+function translate(){document.documentElement.lang=language.value;document.getElementById('langLabel').textContent=text(['Limba','Язык']);document.getElementById('appTitle').textContent=text(['Programare structurată','Структурное программирование']);document.getElementById('appIntro').textContent=text(['Alege tema și urmărește algoritmul pas cu pas.','Выбери тему и проследи алгоритм по шагам.']);document.getElementById('topicsTitle').textContent=text(['Teme disponibile','Доступные темы']);document.getElementById('topicNavigation').setAttribute('aria-label',text(['Meniu de teme','Меню тем']));for(const [id,theme]of themes){theme.button.textContent=id+'. '+text(theme.title);theme.onLanguage?.(language.value);}show(active);}
+
+window.courseSimulator={registerTheme,showTheme:show};
+
+registerTheme('8',{elementId:'theme8',title:['Cicluri cu număr cunoscut de pași. for','Циклы с известным числом шагов. for'],onLanguage:lang=>window.theme8.setLanguage(lang)});
+registerTheme('9',{elementId:'theme9',title:['Cicluri cu număr necunoscut de pași. while','Циклы с неизвестным числом шагов. while'],onLanguage:lang=>window.theme9.setLanguage(lang)});
+registerTheme('10',{elementId:'theme10',title:['Reevaluarea condiției. break și continue','Повторная проверка условия. break и continue'],onLanguage:lang=>window.theme10.setLanguage(lang)});
+registerTheme('11',{elementId:'theme11',title:['Cicluri imbricate și algoritmi combinați','Вложенные циклы и комбинированные алгоритмы'],onLanguage:lang=>window.theme11.setLanguage(lang)});
+
+registerTheme('12',{elementId:'theme12',title:['Tablouri unidimensionale','Одномерные массивы'],onLanguage:lang=>window.theme12.setLanguage(lang)});
+
+language.addEventListener('change',translate);translate();
+
+})();
+
+
+
+</script></body></html>
+
