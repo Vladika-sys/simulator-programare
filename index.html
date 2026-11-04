@@ -135,6 +135,36 @@
 </section>
 
 <script>
+(function(){
+'use strict';
+const names={suma:'summa',depunere:'vznos',straturi:'sloi',volum:'obem',prag:'porog',numar:'kolvo',nota:'otsenka',elevi:'ucheniki',contor:'schetchik',pozMax:'indeksMax',minim:'minimum',maxim:'maksimum',total:'itog',subtotal:'promezhSumma'};
+const token=new RegExp('\\b('+Object.keys(names).join('|')+')\\b','g');
+const codeToken=new RegExp('("(?:\\\\.|[^"\\\\])*"|\'(?:\\\\.|[^\'\\\\])*\')|\\b('+Object.keys(names).join('|')+')\\b','g');
+function identifiers(value){return value.replace(token,name=>names[name]);}
+function code(value){return value.replace(codeToken,(whole,quoted,name)=>quoted||names[name]);}
+function apply(root,language){
+ if(language!=='ru'||!root)return;
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;
+ while((node=walker.nextNode())){
+  const parent=node.parentElement;
+  if(!parent||parent.closest('script,style,.extra-terminal,.cycle-output'))continue;
+  const next=parent.closest('.code')?code(node.nodeValue):identifiers(node.nodeValue);
+  if(next!==node.nodeValue)node.nodeValue=next;
+ }
+ for(const element of root.querySelectorAll('[aria-label]'))element.setAttribute('aria-label',identifiers(element.getAttribute('aria-label')));
+ for(const text of root.querySelectorAll('.cycle-node text:not(.cycle-node-note)')){
+  const shape=text.parentNode.querySelector('rect,polygon');if(!shape)continue;
+  let width=Number(shape.getAttribute('width'));
+  if(!width){const xs=(shape.getAttribute('points')||'').trim().split(/[\s,]+/).map(Number).filter((_,i)=>i%2===0);width=Math.max(...xs)-Math.min(...xs);}
+  const size=parseFloat(getComputedStyle(text).fontSize)||17,fit=(width-16)/(Math.max(1,text.textContent.length)*.62);
+  if(Number.isFinite(fit)&&fit<size)text.style.fontSize=Math.max(12,fit)+'px';
+ }
+}
+window.CodeLocale={apply};
+})();
+
+</script>
+<script>
 (function(root){
 'use strict';
 function build(c){
@@ -329,7 +359,7 @@ function render(animate=true){
  $('t10Trail').replaceChildren(...values.map((v,i)=>{const key=counter?v:i+1,mark=e.marks[key],focus=counter?e.i===key:e.read===key;const z=text('div',undefined,'cycle-ticket '+(mark||'waiting')+(focus?' focus':''));z.append(text('strong',String(v)),text('span',names[mark]||T(counter?'neexecutat':'necitit',counter?'не выполнено':'не считано')));return z;}));
  if(values.length===0)$('t10Trail').append(text('span',T('Pentru n = 0 nu se execută nicio repetare.','При n = 0 повторений нет.'),'cycle-input-caption'));
  $('t10Explain').textContent=config.mode==='break'?T('break încheie ciclul care îl conține. Instrucțiunile de după acel ciclu se execută în continuare.','break завершает охватывающий его цикл. Команды после этого цикла выполняются дальше.'):config.mode==='continue'?config.loop==='for'?T('În for, continue trece la expresia de avansare din antet, apoi se verifică din nou condiția.','В for continue переходит к выражению обновления в заголовке, затем условие проверяется снова.'):T('În while, continue revine direct la condiție. i++ din ramură evită repetarea aceleiași valori. Cel de la sfârșitul corpului este sărit.','В while continue возвращается прямо к условию. i++ в ветви предотвращает повтор того же значения. i++ в конце тела пропускается.'):config.mode==='read'?T('while este potrivit când nu se cunoaște numărul citirilor. Fiecare cin înlocuiește valoarea lui x. După continue se citește din nou, iar după break se afișează suma.','while подходит, когда число вводов неизвестно. Каждый cin заменяет значение x. После continue выполняется новый ввод, после break выводится сумма.'):config.mode==='compare'?T('for și while verifică înaintea corpului. do-while verifică la sfârșit, deci execută corpul cel puțin o dată.','for и while проверяют условие перед телом. do-while проверяет его в конце, поэтому выполняет тело хотя бы один раз.'):T('do-while efectuează prima citire înainte de test. Condiția descrie când trebuie repetată citirea: valoarea este în afara intervalului 1–30.','do-while выполняет первый ввод до проверки. Условие указывает, когда ввод нужно повторить: значение вне диапазона 1–30.');
- graph(e,animate);
+ graph(e,animate);window.CodeLocale.apply($('theme10'),lang);
 }
 function step(){if(!invalid&&at<trace.events.length-1){at++;render();}}
 function play(){if(timer!==null){stop();return;}if(invalid||at===trace.events.length-1)return;const tick=()=>{if($('theme10').hidden||at===trace.events.length-1){stop();return;}step();if(at===trace.events.length-1){stop();return;}timer=setTimeout(tick,Number($('t10Speed').value));};timer=setTimeout(tick,Number($('t10Speed').value));$('t10Play').textContent=T('❚❚ Pauză','❚❚ Пауза');$('t10Play').setAttribute('aria-pressed','true');}
@@ -585,7 +615,7 @@ function lesson(prefix,kind){
    q('Route').textContent=e.type==='copy'?T('Sursa rămâne pe loc. Doar destinația primește copia.','Источник остаётся на месте. Копию получает только назначение.'):e.type==='shorten'?T('n scade o singură dată, după ultima copie.','n уменьшается один раз после последней копии.'):e.type==='mean'||e.type==='empty'?'':T('Celulele gri nu intră în prelucrare.','Серые ячейки не участвуют в обработке.');
    q('Explain').textContent=cfg.mode==='delete'?T('Pentru primul element sunt necesare cele mai multe copii. Pentru ultimul sau singurul element nu se copiază nimic: se execută direct n--.','Для первого элемента требуется больше всего копий. Для последнего или единственного ничего копировать не нужно: выполняется сразу n--.'):T('Extremele pornesc de la primul element, inclusiv când toate numerele sunt negative. Comparația strictă > păstrează primul indice al maximului. Pentru n = 0 nu se citește a[0] și nu se împarte la 0.','Экстремумы получают первый элемент, даже если все числа отрицательны. Строгое > сохраняет первый индекс максимума. При n = 0 нет обращения к a[0] и деления на 0.');
   }
-  q('Route').hidden=!q('Route').textContent;draw(e,animate);
+  q('Route').hidden=!q('Route').textContent;draw(e,animate);window.CodeLocale.apply(document.getElementById(kind==='nested'?'theme11':'theme12'),lang);
  }
  function step(){if(!error&&at<trace.events.length-1){at++;render();}}
  function play(){if(timer!==null){stop();return;}if(error||at===trace.events.length-1)return;const tick=()=>{if(q('Next').closest('section[id]').hidden||at===trace.events.length-1){stop();return;}step();if(at===trace.events.length-1){stop();return;}timer=setTimeout(tick,Number(q('Speed').value));};timer=setTimeout(tick,Number(q('Speed').value));q('Play').textContent=T('❚❚ Pauză','❚❚ Пауза');q('Play').setAttribute('aria-pressed','true');}
@@ -762,7 +792,7 @@ function render(animate=true){
  q('Output').textContent=e.output.length?e.output.join('\n'):T('Nimic afișat încă','Вывода пока нет');
  q('OutputNote').textContent=sentinel?T('La final: suma, apoi numărul valorilor prelucrate.','В конце: сумма, затем количество обработанных значений.'):!tank?T('Mesajele de pe ecran păstrează textul din codul C++.','Сообщения на экране сохраняют текст из кода C++.'):'';
  q('Route').textContent=e.type==='waiting'?T('Se pot completa valorile de intrare; exemplul va fi reluat de la început.','Можно дополнить входные значения; пример начнётся заново.'):e.type==='test'&&!e.condition?T('Traseu: test fals → prima instrucțiune de după ciclu.','Путь: ложное условие → первая инструкция после цикла.'):tank?T('Traseu: test → adaos → același test.','Путь: проверка → добавка → та же проверка.'):T('Traseu: citire → test → corp → o nouă citire.','Путь: ввод → проверка → тело → новый ввод.');
- draw(e,animate);
+ draw(e,animate);window.CodeLocale.apply(document.getElementById('theme9'),lang);
 }
 function step(){if(!error&&at<trace.events.length-1){at++;render();}}
 function play(){if(timer!==null){stop();return;}if(error||at===trace.events.length-1)return;const tick=()=>{if(document.getElementById('theme9').hidden||at===trace.events.length-1){stop();return;}step();if(at===trace.events.length-1){stop();return;}timer=setTimeout(tick,Number(q('Speed').value));};timer=setTimeout(tick,Number(q('Speed').value));q('Play').textContent=T('❚❚ Pauză','❚❚ Пауза');q('Play').setAttribute('aria-pressed','true');}
@@ -929,7 +959,7 @@ function render(animate=true){
  const vars=[['i',e.i],['n',cfg.n],...(mode==='savings'?[['depunere',e.term],['suma',e.sum]]:mode==='fold'?[['straturi',e.layers]]:[])];
  q('Vars').replaceChildren(...vars.map(([k,v])=>el('span',`${k} = ${v===null?'—':v}`)));
  q('Output').textContent=e.output||T('Nimic afișat încă','Вывода пока нет');
- q('Route').textContent=e.type==='init'?T('Inițializare → primul test. Inițializarea nu se repetă.','Инициализация → первая проверка. Инициализация не повторяется.'):e.type==='advance'?T('Actualizare → test. Nu se revine la i = 1.','Обновление → проверка. Возврата к i = 1 нет.'):e.type==='test'&&!e.condition?T('Test fals → instrucțiunea de după ciclu.','Ложная проверка → инструкция после цикла.'):e.type==='term'?T('Calculul depunerii → adunarea ei la total. Contorul rămâne neschimbat.','Расчёт взноса → добавление к сумме. Счётчик не меняется.'):T('Ordine: test → corp → i++ → test.','Порядок: проверка → тело → i++ → проверка.');
+ q('Route').textContent=e.type==='init'?T('Inițializare → primul test. Inițializarea nu se repetă.','Инициализация → первая проверка. Инициализация не повторяется.'):e.type==='advance'?T('Actualizare → test. Nu se revine la i = 1.','Обновление → проверка. Возврата к i = 1 нет.'):e.type==='test'&&!e.condition?T('Test fals → instrucțiunea de după ciclu.','Ложная проверка → инструкция после цикла.'):e.type==='term'?T('Calculul depunerii → adunarea ei la total. Contorul rămâne neschimbat.','Расчёт взноса → добавление к сумме. Счётчик не меняется.'):T('Ordine: test → corp → i++ → test.','Порядок: проверка → тело → i++ → проверка.');window.CodeLocale.apply(document.getElementById('theme8'),lang);
 }
 function step(){if(!error&&at<trace.events.length-1){at++;render();}}
 function play(){if(timer!==null){stop();return;}if(error||at===trace.events.length-1)return;const tick=()=>{if(document.getElementById('theme8').hidden||at===trace.events.length-1){stop();return;}step();if(at===trace.events.length-1){stop();return;}timer=setTimeout(tick,Number(q('Speed').value));};timer=setTimeout(tick,Number(q('Speed').value));q('Play').textContent=T('❚❚ Pauză','❚❚ Пауза');q('Play').setAttribute('aria-pressed','true');}
