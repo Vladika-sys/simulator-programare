@@ -1000,5 +1000,93 @@ language.addEventListener('change',translate);translate();document.body.classLis
 
 
 
-</script></body></html>
+</script><script>
+(()=>{
+'use strict';
+const root=document.createElement('section');root.id='theme13';root.hidden=true;root.setAttribute('aria-labelledby','t13Title');
+root.innerHTML=`<h2 id="t13Title" class="lesson-title"></h2><p id="t13Intro"></p>
+<div class="t13-settings"><div><label id="t13ModeLabel" for="t13Mode"></label><select id="t13Mode"><option value="merge"></option><option value="search"></option><option value="swap"></option><option value="matrix"></option></select></div><div id="t13AGroup"><label id="t13ALabel" for="t13A"></label><input id="t13A" value="5 14 22 31" spellcheck="false"></div><div id="t13BGroup"><label id="t13BLabel" for="t13B"></label><input id="t13B" value="9 14 27" spellcheck="false"></div><div id="t13TargetGroup" hidden><label id="t13TargetLabel" for="t13Target"></label><input id="t13Target" type="number" value="17"></div><div id="t13PGroup" hidden><label id="t13PLabel" for="t13P"></label><input id="t13P" type="number" value="0"></div><div id="t13QGroup" hidden><label id="t13QLabel" for="t13Q"></label><input id="t13Q" type="number" value="2"></div><div id="t13RowsGroup" hidden><label id="t13RowsLabel" for="t13Rows"></label><input id="t13Rows" type="number" min="0" max="4" value="2"></div><div id="t13ColsGroup" hidden><label id="t13ColsLabel" for="t13Cols"></label><input id="t13Cols" type="number" min="0" max="4" value="3"></div><div id="t13ValuesGroup" hidden><label id="t13ValuesLabel" for="t13Values"></label><input id="t13Values" value="8 3 6 5 9 2" spellcheck="false"></div></div>
+<p id="t13Help" class="legend"></p><button id="t13Prepare" class="primary"></button><p id="t13Error" class="error" role="alert"></p>
+<section class="surface"><h2 id="t13VisualTitle"></h2><div id="t13Meta" class="meta"></div><div id="t13Visual"></div><div class="controls"><button id="t13Next" class="primary"></button><button id="t13Back"></button><button id="t13Restart"></button></div><p id="t13Status" class="status" aria-live="polite"></p><h3 id="t13OutputTitle"></h3><pre id="t13Output" class="output-text"></pre></section>
+<section class="columns"><div><h2 id="t13CodeTitle"></h2><pre id="t13Code" class="code"></pre></div><div class="help"><h2 id="t13WhyTitle"></h2><p id="t13Why"></p><h2 id="t13TryTitle"></h2><p id="t13Try"></p></div></section>`;
+document.querySelector('.app-content').append(root);
+const css=document.createElement('style');css.textContent=`.t13-settings{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0 16px}.t13-list{margin:20px 0}.t13-array{display:flex;gap:8px;flex-wrap:wrap}.t13-item{min-width:62px;display:grid;text-align:center;gap:5px;font:20px Consolas,monospace}.t13-item small{font-size:13px;color:var(--navy)}.t13-value{background:var(--soft);padding:12px 9px;min-height:51px}.t13-item.chosen .t13-value{outline:3px solid var(--teal);outline-offset:1px;background:var(--amber)}.t13-item.used{opacity:.5}.t13-matrix-wrap{overflow-x:auto;padding:4px}.t13-matrix{border-collapse:collapse;width:100%;min-width:330px}.t13-matrix th,.t13-matrix td{padding:12px;text-align:center;border:1px solid var(--line);font:20px Consolas,monospace}.t13-matrix th{font-size:15px;color:var(--navy)}.t13-matrix td.visited{background:var(--soft)}.t13-matrix td.chosen{background:var(--amber);outline:3px solid var(--teal);outline-offset:-3px}#t13ValuesGroup{grid-column:1/-1}#t13Visual{min-height:100px}#t13Output{min-height:35px}@media(max-width:760px){.t13-settings{grid-template-columns:1fr}.t13-item{min-width:50px;font-size:17px}.t13-value{padding:10px 6px}.t13-matrix th,.t13-matrix td{padding:10px}.t13-array{gap:7px}}`;document.head.append(css);
+const $=id=>document.getElementById(id),P=(a,b)=>[a,b];let language=$('language').value,mode='merge',events=[],at=0,invalid=false,config={};
+const T=(a,b)=>language==='ro'?a:b;
+const words={t13Title:P('Tema 13 - Căutare, schimb, interclasare și matrice','Тема 13 - Поиск, обмен, слияние и матрицы'),t13Intro:P('Compară pașii cu fragmentul C++. La interclasare, sursele trebuie să fie ordonate nedescrescător.','Сравни шаги с фрагментом C++. Для слияния источники должны быть упорядочены по неубыванию.'),t13ModeLabel:P('Operația','Операция'),t13ALabel:P('Tabloul a','Массив a'),t13BLabel:P('Tabloul b','Массив b'),t13TargetLabel:P('Valoarea căutată','Искомое значение'),t13PLabel:P('Indicele p','Индекс p'),t13QLabel:P('Indicele q','Индекс q'),t13RowsLabel:P('Linii active (0-4)','Активные строки (0-4)'),t13ColsLabel:P('Coloane active (0-4)','Активные столбцы (0-4)'),t13ValuesLabel:P('Valorile matricei, linie cu linie','Значения матрицы по строкам'),t13Prepare:P('Aplică datele','Применить данные'),t13Next:P('Pasul următor','Следующий шаг'),t13Back:P('Pasul anterior','Предыдущий шаг'),t13Restart:P('Reia exemplul','Повторить пример'),t13VisualTitle:P('Starea algoritmului','Состояние алгоритма'),t13OutputTitle:P('Rezultatul acumulat','Накопленный результат'),t13CodeTitle:P('Fragment C++','Фрагмент C++'),t13WhyTitle:P('Explicația pasului','Объяснение шага'),t13TryTitle:P('Încearcă și explică','Попробуй и объясни')};
+function el(tag,value,cls){const e=document.createElement(tag);if(value!==undefined)e.textContent=value;if(cls)e.className=cls;return e;}
+function list(id){let s=$(id).value.trim();let a=s?s.split(/[\s,;]+/).map(Number):[];if(a.length>12||a.some(v=>!Number.isSafeInteger(v)||Math.abs(v)>1e6))throw new Error(T('Folosește cel mult 12 numere întregi între -1000000 și 1000000.','Используй не более 12 целых чисел от -1000000 до 1000000.'));return a;}
+function number(id){const value=$(id).value.trim(),x=Number(value);if(!value||!Number.isSafeInteger(x)||Math.abs(x)>1e6)throw new Error(T('Introdu un număr întreg valid.','Введи допустимое целое число.'));return x;}
+function create(c){
+ const a=[...c.a],b=c.b??[],output=[],ev=[];let i=0,j=0,k=0;
+ const push=(data={})=>ev.push({a:[...a],b:[...b],output:[...output],i,j,k,event:'ready',done:false,...data});push();
+ if(c.mode==='merge'){
+  while(i<a.length||j<b.length){let source,sourceIndex,fromI=i,fromJ=j;
+   if(j>=b.length||(i<a.length&&a[i]<=b[j])){source='a';sourceIndex=i;output.push(a[i++]);}else{source='b';sourceIndex=j;output.push(b[j++]);}k++;
+   push({event:'copy',source,sourceIndex,fromI,fromJ,value:output.at(-1)});
+  }
+ }else if(c.mode==='search'){
+  for(i=0;i<a.length;i++){const found=a[i]===c.target;push({event:'compare',current:i,found,position:found?i:-1,value:a[i]});if(found)break;}
+ }else if(c.mode==='swap'){
+  const temp=a[c.p];push({event:'save',temp});a[c.p]=a[c.q];push({event:'first',temp});a[c.q]=temp;push({event:'second',temp});
+ }else{
+  for(i=0;i<c.rows;i++)for(j=0;j<c.cols;j++){k=i*c.cols+j;output.push(a[k]);push({event:'cell',current:k,value:a[k],i,j});}
+ }
+ ev.at(-1).done=true;return ev;
+}
+function visibility(){for(const id of ['A','B','Target','P','Q','Rows','Cols','Values'])$("t13"+id+'Group').hidden=!(id==='A'?mode!=='matrix':id==='B'?mode==='merge':id==='Target'?mode==='search':['P','Q'].includes(id)?mode==='swap':mode==='matrix');}
+function prepare(){
+ mode=$('t13Mode').value;visibility();
+ try{
+  const c={mode,a:mode==='matrix'?[]:list('t13A')};
+  if(mode==='merge'){c.b=list('t13B');if([c.a,c.b].some(a=>a.some((v,i)=>i&&a[i-1]>v)))throw new Error(T('Ambele surse trebuie să fie ordonate nedescrescător. Datele nu sunt sortate automat.','Оба источника должны быть упорядочены по неубыванию. Автоматическая сортировка не выполняется.'));}
+  if(mode==='search')c.target=number('t13Target');
+  if(mode==='swap'){c.p=number('t13P');c.q=number('t13Q');if(c.p<0||c.q<0||c.p>=c.a.length||c.q>=c.a.length)throw new Error(T('Indicii trebuie să fie în partea activă a tabloului.','Индексы должны находиться в активной части массива.'));}
+  if(mode==='matrix'){c.rows=number('t13Rows');c.cols=number('t13Cols');if(c.rows<0||c.rows>4||c.cols<0||c.cols>4)throw new Error(T('Dimensiunile trebuie să fie între 0 și 4.','Размеры должны быть от 0 до 4.'));let s=$('t13Values').value.trim();c.a=s?s.split(/[\s,;]+/).map(Number):[];if(c.a.length!==c.rows*c.cols||c.a.some(v=>!Number.isSafeInteger(v)||Math.abs(v)>1e6))throw new Error(T(`Introdu exact ${c.rows*c.cols} numere întregi între -1000000 și 1000000.`,`Введи ровно ${c.rows*c.cols} целых чисел от -1000000 до 1000000.`));}
+  config=c;events=create(c);at=0;invalid=false;$('t13Error').textContent='';render();
+ }catch(error){invalid=true;$('t13Error').textContent=error.message;$('t13Next').disabled=true;$('t13Back').disabled=true;}
+}
+function labels(){
+ for(const [id,words2]of Object.entries(words))$(id).textContent=words2[language==='ro'?0:1];
+ const options=[P('Interclasare','Слияние'),P('Căutare secvențială','Последовательный поиск'),P('Interschimbare','Обмен'),P('Citire și afișare matrice','Ввод и вывод матрицы')];options.forEach((p,i)=>$('t13Mode').options[i].textContent=p[language==='ro'?0:1]);
+ $('t13Help').textContent=mode==='matrix'?T('Valorile se introduc pe linii. Pentru o dimensiune 0, lasă câmpul de valori gol.','Значения вводятся по строкам. При нулевом размере оставь поле значений пустым.'):T('Indicii pornesc de la 0. Pentru un tablou vid, lasă câmpul gol.','Индексы начинаются с 0. Для пустого массива оставь поле пустым.');
+}
+function array(parent,name,values,chosen=-1,used=0){const block=el('div',undefined,'t13-list');block.append(el('h3',name));const row=el('div',undefined,'t13-array');if(!values.length)row.append(el('span',T('vid','пустой')));values.forEach((v,i)=>{const cell=el('div',undefined,'t13-item'+(i===chosen?' chosen':'')+(i<used?' used':''));cell.append(el('small',`[${i}]`),el('span',String(v),'t13-value'));row.append(cell);});block.append(row);parent.append(block);}
+function code(){if(mode==='merge')return 'int i = 0, j = 0, k = 0;\nwhile (i < n && j < m) {\n    if (a[i] <= b[j]) {\n        c[k] = a[i]; i++;\n    } else {\n        c[k] = b[j]; j++;\n    }\n    k++;\n}\nwhile (i < n) { c[k] = a[i]; i++; k++; }\nwhile (j < m) { c[k] = b[j]; j++; k++; }';
+ if(mode==='search')return T('int poz = -1;\nfor (int i = 0; i < n; i++) {\n    if (a[i] == cautat) {\n        poz = i;\n        break;\n    }\n}', 'int indeks = -1;\nfor (int i = 0; i < n; i++) {\n    if (a[i] == iskomoe) {\n        indeks = i;\n        break;\n    }\n}');
+ if(mode==='swap')return T('int temp = a[p];\na[p] = a[q];\na[q] = temp;','int vrem = a[p];\na[p] = a[q];\na[q] = vrem;');
+ return T('for (int i = 0; i < linii; i++)\n    for (int j = 0; j < coloane; j++)\n        cin >> matrice[i][j];\nfor (int i = 0; i < linii; i++) {\n    for (int j = 0; j < coloane; j++)\n        cout << matrice[i][j] << " ";\n    cout << "\\n";\n}','for (int i = 0; i < stroki; i++)\n    for (int j = 0; j < stolbtsy; j++)\n        cin >> matr[i][j];\nfor (int i = 0; i < stroki; i++) {\n    for (int j = 0; j < stolbtsy; j++)\n        cout << matr[i][j] << " ";\n    cout << "\\n";\n}');}
+function render(){
+ labels();if(invalid)return;const s=events[at];if(!s)return;const visual=$('t13Visual');visual.replaceChildren();let status=T('Date pregătite. Alege pasul următor.','Данные готовы. Выбери следующий шаг.'),why='',output='';
+ $('t13Meta').replaceChildren(el('span',T(`Pas ${at} din ${events.length-1}`,`Шаг ${at} из ${events.length-1}`)));
+ if(mode==='merge'){
+  array(visual,'a',s.a,s.source==='a'?s.sourceIndex:-1,s.source==='a'?s.i-1:s.i);array(visual,'b',s.b,s.source==='b'?s.sourceIndex:-1,s.source==='b'?s.j-1:s.j);array(visual,'c',s.output,s.output.length-1);
+  $('t13Meta').append(el('span',`i = ${s.i}, j = ${s.j}, k = ${s.k}`));output=s.output.join(' ');
+  if(s.event==='copy'){status=T(`Copiem ${s.value} din ${s.source}[${s.sourceIndex}] în c[${s.k-1}].`,`Копируем ${s.value} из ${s.source}[${s.sourceIndex}] в c[${s.k-1}].`);const tail=s.fromI>=config.a.length||s.fromJ>=config.b.length;why=tail?T('O sursă s-a terminat. Copiem direct elementul rămas din cealaltă.','Один источник закончился. Напрямую копируем остаток другого.'):T(`Comparam ${config.a[s.fromI]} cu ${config.b[s.fromJ]}. Alegem valoarea mai mică; la egalitate, pe cea din a. Avansează numai sursa aleasă și k.`,`Сравниваем ${config.a[s.fromI]} и ${config.b[s.fromJ]}. Выбираем меньшее; при равенстве - из a. Сдвигаются индекс выбранного источника и k.`);}
+  if(s.done)why+=' '+T(`Rezultatul are ${s.k} elemente, adică n + m.`,`В результате ${s.k} элементов, то есть n + m.`);
+ }else if(mode==='search'){
+  array(visual,'a',s.a,s.current??-1);output=s.event==='compare'?(s.found?String(s.position):s.done?'-1':T('încă nu este găsit','пока не найден')):s.done?'-1':'';
+  if(s.event==='compare'){status=T(`Comparăm a[${s.current}] = ${s.value} cu ${config.target}.`,`Сравниваем a[${s.current}] = ${s.value} с ${config.target}.`);why=s.found?T('Valorile sunt egale. Memorăm indicele și break oprește căutarea la prima apariție.','Значения равны. Сохраняем индекс, и break завершает поиск на первом вхождении.'):s.done?T('Am verificat toate elementele. Rezultatul rămâne -1.','Проверены все элементы. Результат остается -1.'):T('Valorile diferă. Urmează următorul element.','Значения различаются. Далее проверяем следующий элемент.');}
+  if(s.a.length===0)why=T('Tabloul este vid. Bucla nu execută comparații, iar rezultatul este -1.','Массив пуст. Цикл не выполняет сравнений, результат -1.');
+ }else if(mode==='swap'){
+  array(visual,'a',s.a,s.event==='second'?config.q:s.event==='first'?config.p:-1);$('t13Meta').append(el('span',T(`temp = ${s.temp??'-'}`,`vrem = ${s.temp??'-'}`)));output=s.done?s.a.join(' '):'';
+  const explanations={save:P('Salvăm prima valoare în variabila temporară.','Сохраняем первое значение во временной переменной.'),first:P('Copiem valoarea de la q la p. Valoarea inițială de la p este încă păstrată în variabila temporară.','Копируем значение с q на p. Исходное значение p по-прежнему хранится во временной переменной.'),second:P('Copiem valoarea salvată la q. Schimbul este complet, lungimea rămâne aceeași.','Копируем сохраненное значение в q. Обмен завершен, длина не изменилась.')};if(explanations[s.event])status=why=explanations[s.event][language==='ro'?0:1];
+ }else{
+  if(config.rows&&config.cols){const wrap=el('div',undefined,'t13-matrix-wrap'),table=el('table',undefined,'t13-matrix'),head=el('tr');head.append(el('th',T('Linie / col.','Строка / столбец')));for(let j=0;j<config.cols;j++)head.append(el('th',String(j)));table.append(head);for(let i=0;i<config.rows;i++){const row=el('tr');row.append(el('th',String(i)));for(let j=0;j<config.cols;j++){const k=i*config.cols+j;row.append(el('td',String(config.a[k]),(k<s.output.length?'visited ':'')+(k===s.current?'chosen':'')));}table.append(row);}wrap.append(table);visual.append(wrap);}else visual.append(el('p',T('Matrice vidă','Пустая матрица')));
+  output=s.output.map((v,k)=>String(v)+((k+1)%config.cols===0?'\n':' ')).join('');
+  if(s.event==='cell'){status=T(`Vizităm [${s.i}][${s.j}], valoarea ${s.value}.`,`Посещаем [${s.i}][${s.j}], значение ${s.value}.`);why=s.j===config.cols-1?T('S-a terminat linia. Afișăm trecerea la linie; următoarea linie începe cu j = 0.','Строка закончилась. Выводим переход; следующая строка начинается с j = 0.'):T('Rămânem pe aceeași linie și trecem la coloana următoare.','Остаемся в той же строке и переходим к следующему столбцу.');$('t13Meta').append(el('span',`i = ${s.i}, j = ${s.j}`));}
+  if(!config.rows||!config.cols)why=T('O dimensiune activă este 0. Nu accesăm niciun element.','Один активный размер равен 0. Ни к одному элементу не обращаемся.');
+ }
+ $('t13Status').textContent=status;$('t13Why').textContent=why;$('t13Output').textContent=output;$('t13Code').textContent=code();$('t13Try').textContent=mode==='merge'?T('Încearcă surse vide, valori egale și o sursă care se termină mult mai repede.','Проверь пустые источники, равные значения и источник, который заканчивается гораздо раньше.'):mode==='search'?T('Caută prima, ultima, o valoare repetată și una absentă.','Найди первое, последнее, повторяющееся и отсутствующее значение.'):mode==='swap'?T('Schimbă primul cu ultimul element. Apoi încearcă doi indici egali.','Обменяй первый и последний элементы. Затем проверь два одинаковых индекса.'):T('Compară 1 × 4 cu 4 × 1. Unde apare trecerea la linie?','Сравни 1 × 4 и 4 × 1. Где появляется переход на новую строку?');
+ $('t13Next').disabled=s.done||invalid;$('t13Back').disabled=at===0;
+}
+$('t13Mode').addEventListener('change',()=>{mode=$('t13Mode').value;const defaults=mode==='search'?'42 17 63 17 90':mode==='swap'?'30 10 20':'5 14 22 31';$('t13A').value=defaults;prepare();});
+$('t13Prepare').addEventListener('click',prepare);$('t13Next').addEventListener('click',()=>{if(!invalid&&at<events.length-1){at++;render();}});$('t13Back').addEventListener('click',()=>{if(!invalid&&at>0){at--;render();}});$('t13Restart').addEventListener('click',prepare);
+prepare();window.theme13={getState:()=>JSON.parse(JSON.stringify({config,state:events[at],at,eventCount:events.length})),setLanguage:lang=>{language=lang;render();}};
+window.courseSimulator.registerTheme('13',{elementId:'theme13',title:P('Căutare, interschimbare, interclasare și matrice','Поиск, обмен, слияние и матрицы'),onLanguage:lang=>window.theme13.setLanguage(lang)});
+window.courseSimulator.showTheme('13');
+})();
+
+</script>
+</body></html>
 
